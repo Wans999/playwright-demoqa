@@ -1,7 +1,8 @@
 const report = require('multiple-cucumber-html-reporter');
 
 report.generate({
-  jsonDir: 'reports',
+  // Folder khusus: reporter membaca SEMUA file .json di folder ini (termasuk subfolder)
+  jsonDir: 'reports/cucumber',
   reportPath: 'reports/html',
   metadata: {
     browser: { name: 'chrome', version: '120' },

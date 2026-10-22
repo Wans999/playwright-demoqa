@@ -13,7 +13,7 @@ const path = require('path');
 const { spawnSync, spawn } = require('child_process');
 
 const ROOT = __dirname;
-const REPORT_FILE = path.join(ROOT, 'reports/cucumber-report.json');
+const REPORT_FILE = path.join(ROOT, 'reports/cucumber/cucumber-report.json');
 const DASHBOARD_FILE = path.join(ROOT, 'reports/dashboard/index.html');
 const isCI = process.env.CI === 'true';
 const isWindows = process.platform === 'win32';

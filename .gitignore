@@ -1,7 +1,7 @@
 node_modules/
 videos/
 reports/html/
-reports/cucumber-report.json
+reports/cucumber/
 reports/dashboard/
 reports/history.json
 allure-results/

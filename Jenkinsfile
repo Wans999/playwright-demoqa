@@ -1,6 +1,11 @@
 pipeline {
     agent any
 
+    options {
+        // Batasi build yang disimpan; tiap build menyimpan salinan dashboard (screenshot + video)
+        buildDiscarder(logRotator(numToKeepStr: '20'))
+    }
+
     parameters {
         choice(
             name: 'TAGS',
@@ -10,7 +15,8 @@ pipeline {
     }
 
     environment {
-        PATH = "/usr/local/bin:${env.PATH}"
+        // /opt/homebrew/bin = Homebrew di Mac Apple Silicon, /usr/local/bin = Mac Intel / Linux
+        PATH = "/opt/homebrew/bin:/usr/local/bin:${env.PATH}"
         CI = "true"
     }
 
@@ -23,7 +29,7 @@ pipeline {
 
         stage('Install Dependencies') {
             steps {
-                sh 'npm install'
+                sh 'npm ci'
             }
         }
 
@@ -35,20 +41,18 @@ pipeline {
 
         stage('Run Tests') {
             steps {
-                sh params.TAGS == 'all' ? 'npm test' : "npm test -- --tags '${params.TAGS}'"
-            }
-        }
-
-        stage('Generate Report') {
-            steps {
-                sh 'npm run report'
+                // run-tests.js: jalankan test + Allure, lalu selalu generate dashboard (juga saat ada yang gagal)
+                sh params.TAGS == 'all'
+                    ? 'node run-tests.js --allure'
+                    : "node run-tests.js --allure --tags '${params.TAGS}'"
             }
         }
     }
 
     post {
         always {
-            sh 'npm run dashboard || true'
+            // Dibuat di sini (bukan di stage) supaya tetap jalan walaupun ada test yang gagal
+            sh 'npm run report || true'
             publishHTML(target: [
                 allowMissing: true,
                 alwaysLinkToLastBuild: true,
@@ -58,7 +62,7 @@ pipeline {
                 reportName: 'Test Dashboard'
             ])
             publishHTML(target: [
-                allowMissing: false,
+                allowMissing: true,
                 alwaysLinkToLastBuild: true,
                 keepAll: true,
                 reportDir: 'reports/html',

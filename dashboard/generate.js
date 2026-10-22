@@ -1,4 +1,4 @@
-// Generate dashboard HTML dari hasil Cucumber (reports/cucumber-report.json)
+// Generate dashboard HTML dari hasil Cucumber (reports/cucumber/cucumber-report.json)
 // Output: reports/dashboard/index.html + screenshots/, riwayat run di reports/history.json,
 // dan salinan dashboard per run di reports/dashboard/runs/run-N/ supaya run lama bisa dibuka lagi
 const fs = require('fs');
@@ -10,7 +10,7 @@ const testData = require('../data/testData.json');
 const { analyzeFailure } = require('./errorAnalyzer');
 
 const ROOT = path.resolve(__dirname, '..');
-const REPORT_FILE = path.join(ROOT, 'reports/cucumber-report.json');
+const REPORT_FILE = path.join(ROOT, 'reports/cucumber/cucumber-report.json');
 const HISTORY_FILE = path.join(ROOT, 'reports/history.json');
 const OUT_DIR = path.join(ROOT, 'reports/dashboard');
 const SHOT_DIR = path.join(OUT_DIR, 'screenshots');
@@ -209,7 +209,7 @@ function renderHtml(data) {
 
 function main() {
     if (!fs.existsSync(REPORT_FILE)) {
-        console.error('reports/cucumber-report.json belum ada. Jalankan test dulu (npm test).');
+        console.error('reports/cucumber/cucumber-report.json belum ada. Jalankan test dulu (npm test).');
         process.exit(1);
     }
 

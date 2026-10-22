@@ -236,8 +236,10 @@ Kredensial dan URL dikelola lewat file `.env` menggunakan package `dotenv`. File
 
 ### Prasyarat
 - Jenkins terinstall dan berjalan di `http://localhost:8080`
-- Plugin **HTML Publisher** terinstall
-- Node.js terinstall di `/usr/local/bin`
+- Plugin: **Pipeline**, **Git**, **HTML Publisher**, **Allure Jenkins Plugin**
+- **Allure Commandline** didaftarkan di **Manage Jenkins → Tools → Allure Commandline installations** (centang *Install automatically*)
+- Node.js terinstall di `/opt/homebrew/bin` (Mac Apple Silicon) atau `/usr/local/bin` (Mac Intel / Linux)
+- Java (sudah ada kalau Jenkins jalan)
 
 ### Setup Job
 1. Buat **New Item** → pilih **Pipeline**
@@ -255,13 +257,28 @@ Kredensial dan URL dikelola lewat file `.env` menggunakan package `dotenv`. File
 - **Build with Parameters** — pilih tag scenario yang dijalankan
 
 ### Melihat Report di Jenkins
-Setelah build selesai, klik **Cucumber HTML Report** di sidebar kiri.
+Setelah build selesai, di sidebar kiri halaman build ada:
+- **Test Dashboard** — dashboard custom (Logs, Videos, History, dll)
+- **Cucumber HTML Report**
+- **Allure Report**
 
-### Fix Grafik Report Tidak Muncul
+### Wajib: Izinkan JavaScript di Report (CSP)
+Secara default Jenkins memblokir JavaScript di report HTML, sehingga **Test Dashboard tampil kosong** dan grafik Cucumber report tidak muncul.
 Jalankan script ini di **Manage Jenkins → Script Console**:
 ```groovy
 System.setProperty("hudson.model.DirectoryBrowserSupport.CSP", "")
 ```
+Setting ini **hilang setiap Jenkins di-restart**. Supaya permanen, buat init script yang otomatis dijalankan Jenkins setiap start:
+```bash
+mkdir -p ~/.jenkins/init.groovy.d
+echo 'System.setProperty("hudson.model.DirectoryBrowserSupport.CSP", "")' > ~/.jenkins/init.groovy.d/csp.groovy
+brew services restart jenkins-lts
+```
+
+### Catatan
+- History dashboard di Jenkins tersimpan di workspace job (`reports/history.json`), terpisah dari history di laptop.
+- Tombol Allure/Cucumber di dalam Test Dashboard tidak berfungsi di Jenkins; pakai menu di sidebar build.
+- Build yang disimpan dibatasi 20 terakhir (`buildDiscarder` di Jenkinsfile) supaya disk tidak penuh.
 
 ---
 
@@ -270,8 +287,7 @@ System.setProperty("hudson.model.DirectoryBrowserSupport.CSP", "")
 | Stage | Keterangan |
 |---|---|
 | Checkout | Pull code dari GitHub |
-| Install Dependencies | `npm install` |
+| Install Dependencies | `npm ci` (install sesuai `package-lock.json`) |
 | Install Playwright Browsers | Install Chromium |
-| Run Tests | Jalankan Cucumber test |
-| Generate Report | Generate HTML report |
-| Post | Publish HTML report ke Jenkins |
+| Run Tests | `node run-tests.js --allure` — test + Allure results + Test Dashboard |
+| Post (selalu jalan) | Generate Cucumber HTML report, publish Test Dashboard, Cucumber report & Allure report |
