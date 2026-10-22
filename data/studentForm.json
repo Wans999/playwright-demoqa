@@ -1,0 +1,17 @@
+{
+  "firstName": "Ihwanul",
+  "lastName": "Iqbal",
+  "email": "ihwan.iqbal@example.com",
+  "gender": "Male",
+  "mobile": "0812345678",
+  "dateOfBirth": {
+    "input": "27 Jun 1999",
+    "expected": "27 June,1999"
+  },
+  "subjects": ["Computer Science"],
+  "hobbies": ["Sports", "Reading"],
+  "picture": "files/profile.png",
+  "currentAddress": "Jl. Medan Merdeka Barat No. 1, Jakarta",
+  "state": "NCR",
+  "city": "Delhi"
+}

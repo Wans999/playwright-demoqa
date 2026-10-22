@@ -1,0 +1,1744 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Test Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --page: #e9e9ec;
+    --surface: #ffffff;
+    --soft: #f4f4f6;
+    --soft-2: #ececf0;
+    --line: #ebebef;
+    --ink: #141522;
+    --ink-2: #3a3b4a;
+    --muted: #8e92a4;
+    --muted-2: #b7bac7;
+    --blue: #6b9be6;
+    --blue-ink: #3f78d4;
+    --blue-soft: #e8eefb;
+    --orange: #f0a35a;
+    --orange-soft: #fbecd9;
+    --green: #45b98f;
+    --green-soft: #e1f4ec;
+    --red: #e4484d;
+    --red-soft: #fde8e8;
+    --tooltip: #141522;
+    --radius-lg: 28px;
+    --radius-md: 18px;
+    --font: 'Urbanist', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--page);
+    color: var(--ink);
+    font-family: var(--font);
+    font-size: 16px;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; text-decoration: none; }
+  button, select, input { font: inherit; color: inherit; }
+  svg { display: block; }
+  .muted { color: var(--muted); }
+
+  .app {
+    max-width: 1640px;
+    margin: 16px auto;
+    background: var(--surface);
+    border-radius: var(--radius-lg);
+    display: grid;
+    grid-template-columns: 280px minmax(0, 1fr) 400px;
+    min-height: calc(100vh - 32px);
+  }
+
+  /* ---------- Sidebar ---------- */
+  .sidebar {
+    border-right: 1px solid var(--line);
+    padding: 44px 28px 36px 40px;
+    display: flex;
+    flex-direction: column;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    max-height: calc(100vh - 32px);
+    overflow-y: auto;
+  }
+  @media (max-height: 900px) and (min-width: 861px) { .promo { display: none; } .side-links { margin-top: auto; } }
+  .logo { display: flex; align-items: center; gap: 10px; font-size: 30px; font-weight: 700; letter-spacing: -0.02em; }
+  .logo-mark { width: 40px; height: 40px; color: var(--ink); }
+  .nav { margin-top: 64px; display: flex; flex-direction: column; gap: 6px; }
+  .nav-item {
+    display: flex; align-items: center; gap: 18px;
+    padding: 12px 0; font-size: 19px; font-weight: 500; color: var(--ink-2);
+    transition: color .15s;
+  }
+  .nav-item svg { width: 26px; height: 26px; color: var(--muted); transition: color .15s; }
+  .nav-item:hover, .nav-item.active { color: var(--ink); }
+  .nav-item.active { font-weight: 700; }
+  .nav-item.active svg, .nav-item:hover svg { color: var(--ink); }
+  .nav-badge {
+    margin-left: auto; min-width: 30px; height: 30px; padding: 0 9px;
+    border-radius: 999px; background: var(--soft); display: grid; place-items: center;
+    font-size: 14px; font-weight: 600;
+  }
+  .promo {
+    margin-top: auto; padding: 32px 22px; text-align: center;
+    border-radius: var(--radius-md);
+    background: linear-gradient(180deg, var(--soft) 0%, var(--surface) 100%);
+  }
+  .promo h3 { margin: 0 0 12px; font-size: 21px; font-weight: 700; }
+  .promo p { margin: 0 0 24px; color: var(--ink-2); line-height: 1.55; font-size: 16px; }
+  .btn-pill {
+    display: inline-flex; align-items: center; justify-content: center;
+    padding: 16px 36px; border-radius: 999px; border: 0;
+    background: var(--blue-soft); color: var(--ink); font-weight: 600; font-size: 17px;
+    box-shadow: inset 0 0 0 1px rgba(107,155,230,.25);
+    cursor: pointer; transition: background .15s;
+  }
+  .btn-pill:hover { background: #d9e5fa; }
+  .btn-pill[aria-disabled="true"] { opacity: .45; pointer-events: none; }
+  .side-links { margin-top: 48px; display: flex; flex-direction: column; gap: 6px; }
+  .side-links .nav-item { font-size: 18px; }
+  .side-links .nav-item[aria-disabled="true"] { opacity: .45; pointer-events: none; }
+
+  /* ---------- Main ---------- */
+  .main { padding: 44px 64px 56px; min-width: 0; }
+  .header { display: flex; justify-content: space-between; align-items: flex-start; gap: 24px; padding-bottom: 64px; border-bottom: 1px solid var(--line); scroll-margin-top: 24px; }
+  .header h1 { margin: 0; font-size: 44px; line-height: 1.1; font-weight: 700; letter-spacing: -0.02em; }
+  .header p { margin: 18px 0 0; font-size: 21px; }
+  .date-pill { display: flex; align-items: center; gap: 16px; font-size: 18px; font-weight: 500; white-space: nowrap; }
+  .icon-circle {
+    width: 56px; height: 56px; border-radius: 50%; background: var(--soft);
+    display: grid; place-items: center; flex: none;
+  }
+  .icon-circle svg { width: 24px; height: 24px; }
+
+  .stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); padding: 32px 0; border-bottom: 1px solid var(--line); }
+  .stat { display: flex; align-items: center; gap: 22px; padding: 0 24px; min-width: 0; }
+  .stat:first-child { padding-left: 0; }
+  .stat + .stat { border-left: 1px solid var(--line); }
+  .stat .icon-circle { width: 66px; height: 66px; }
+  .stat-label { font-size: 20px; font-weight: 600; }
+  .stat-value { margin-top: 10px; display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+  .stat-value strong { font-size: 28px; font-weight: 700; }
+  .delta { display: inline-flex; align-items: center; gap: 6px; font-size: 18px; font-weight: 600; }
+  .delta svg { width: 14px; height: 14px; }
+  .delta.good { color: var(--green); }
+  .delta.bad { color: var(--red); }
+  .delta.neutral { color: var(--muted); font-weight: 500; }
+
+  .section-head { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+  .section-head h2 { margin: 0; font-size: 30px; font-weight: 700; letter-spacing: -0.01em; }
+  .section-head .left { display: flex; align-items: center; gap: 28px; }
+  .section-head .sub { padding-left: 28px; border-left: 1px solid var(--line); font-size: 19px; font-weight: 600; line-height: 34px; }
+
+  .select {
+    position: relative; display: inline-flex; align-items: center;
+  }
+  .select select {
+    appearance: none; border: 0; cursor: pointer;
+    padding: 13px 48px 13px 22px; border-radius: 999px;
+    background: var(--soft); font-size: 18px; font-weight: 500;
+  }
+  .select.outline select { background: var(--surface); box-shadow: inset 0 0 0 1px var(--line); }
+  .select svg { position: absolute; right: 18px; width: 16px; height: 16px; pointer-events: none; }
+  .select select:focus-visible, .btn-icon:focus-visible, .more-btn:focus-visible, .search input:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+
+  #performance { padding-top: 64px; scroll-margin-top: 24px; }
+  .chart { position: relative; margin-top: 40px; height: 320px; }
+  .chart svg { width: 100%; height: 100%; overflow: visible; }
+  .chart .axis-label { fill: var(--muted); font-size: 18px; font-family: var(--font); }
+  .chart .x-label { fill: var(--muted); font-size: 18px; font-family: var(--font); }
+  .chart .x-label.active { fill: var(--ink); font-weight: 600; }
+  .chart-tooltip {
+    position: absolute; pointer-events: none; z-index: 2;
+    min-width: 220px; padding: 16px 18px; border-radius: 14px;
+    background: var(--tooltip); color: #fff; box-shadow: 0 14px 30px rgba(20,21,34,.25);
+    transition: opacity .12s;
+  }
+  .chart-tooltip h4 { margin: 0 0 12px; font-size: 18px; font-weight: 600; }
+  .chart-tooltip .row { display: flex; align-items: center; gap: 12px; font-size: 17px; color: #c4c6d2; margin-top: 8px; }
+  .chart-tooltip .bar { width: 3px; height: 22px; border-radius: 2px; }
+  .chart-tooltip .row b { margin-left: auto; color: #fff; font-weight: 600; padding-left: 24px; }
+  .legend { display: flex; gap: 24px; margin-top: 12px; padding-left: 64px; font-size: 16px; color: var(--muted); flex-wrap: wrap; }
+  .legend span { display: inline-flex; align-items: center; gap: 8px; }
+  .legend i { width: 18px; height: 3px; border-radius: 2px; display: inline-block; }
+
+  #scenarios { padding-top: 64px; scroll-margin-top: 24px; }
+  .scenario-list { margin-top: 28px; }
+  .scenario { border-radius: var(--radius-md); transition: background .15s; }
+  .scenario.open { background: var(--soft); }
+  .scenario-row {
+    display: grid; align-items: center; gap: 20px;
+    grid-template-columns: 66px minmax(0, 1fr) 150px 110px 44px;
+    padding: 12px; border-radius: var(--radius-md); cursor: pointer; user-select: none;
+  }
+  .scenario:not(.open) .scenario-row:hover { background: var(--soft); }
+  .scenario-row:hover .scenario-name { color: var(--blue-ink); }
+  .feature-icon { width: 66px; height: 66px; border-radius: 50%; display: grid; place-items: center; }
+  .feature-icon svg { width: 28px; height: 28px; }
+  .scenario-name { font-size: 19px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .scenario-feature { margin-top: 4px; font-size: 16px; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .status { display: inline-flex; align-items: center; gap: 12px; font-size: 18px; font-weight: 500; }
+  .status::before { content: ''; width: 9px; height: 9px; border-radius: 50%; background: var(--muted-2); }
+  .status.passed::before { background: var(--green); }
+  .status.failed::before { background: var(--red); }
+  .status.skipped::before { background: var(--orange); }
+  .duration { display: inline-flex; align-items: center; gap: 12px; font-size: 19px; font-weight: 600; }
+  .duration svg { width: 22px; height: 22px; color: var(--muted-2); }
+  .more-btn {
+    width: 44px; height: 44px; border: 0; border-radius: 50%; background: transparent;
+    display: grid; place-items: center; cursor: pointer; transition: background .15s;
+  }
+  .scenario-row:hover .more-btn, .scenario.open .more-btn { background: var(--surface); }
+  .more-btn svg { width: 22px; height: 22px; transition: transform .2s; }
+  .scenario.open .more-btn svg { transform: rotate(180deg); }
+
+  .scenario-detail { padding: 4px 24px 24px 98px; }
+  .tags { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+  .tag { padding: 5px 12px; border-radius: 999px; background: var(--surface); font-size: 14px; font-weight: 600; color: var(--blue-ink); }
+  .tag.plain { color: var(--muted); font-weight: 500; }
+  .steps { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+  .step {
+    display: grid; grid-template-columns: 28px minmax(0, 1fr) auto auto; gap: 14px; align-items: center;
+    padding: 12px 14px; border-radius: 14px; background: var(--surface); font-size: 16px;
+  }
+  .step-icon { width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; }
+  .step-icon svg { width: 15px; height: 15px; }
+  .step-icon.passed { background: var(--green-soft); color: var(--green); }
+  .step-icon.failed { background: var(--red-soft); color: var(--red); }
+  .step-icon.skipped, .step-icon.undefined, .step-icon.pending { background: var(--soft); color: var(--muted); }
+  .step-text { min-width: 0; line-height: 1.4; }
+  .step-text b { color: var(--muted); font-weight: 600; margin-right: 6px; }
+  .step-time { color: var(--muted); font-size: 15px; font-variant-numeric: tabular-nums; }
+  .shot-btn {
+    border: 0; background: var(--soft); border-radius: 999px; padding: 6px 12px; cursor: pointer;
+    display: inline-flex; align-items: center; gap: 6px; font-size: 14px; font-weight: 600; color: var(--ink-2);
+  }
+  .shot-btn:hover { background: var(--blue-soft); }
+  .shot-btn svg { width: 16px; height: 16px; }
+  .shot-btn[hidden] { display: none; }
+  .error-box {
+    margin: 14px 0 0; padding: 16px 18px; border-radius: 14px; background: var(--red-soft); color: #9b2328;
+    font: 14px/1.5 ui-monospace, SFMono-Regular, Menlo, monospace; white-space: pre-wrap; word-break: break-word;
+    max-height: 260px; overflow: auto;
+  }
+  .empty { padding: 48px 0; text-align: center; color: var(--muted); font-size: 18px; }
+
+  /* ---------- Error summary inside scenario row ---------- */
+  .mini-error {
+    margin-top: 14px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+    padding: 14px 16px; border-radius: 14px; background: var(--red-soft); font-size: 16px; color: #8f2126;
+  }
+  .mini-error a { margin-left: auto; font-weight: 700; color: var(--red); white-space: nowrap; }
+  .mini-error a:hover { text-decoration: underline; }
+  .pill {
+    display: inline-flex; align-items: center; gap: 6px; padding: 5px 12px; border-radius: 999px;
+    font-size: 13px; font-weight: 700; letter-spacing: .02em; text-transform: uppercase; white-space: nowrap;
+  }
+  .pill.red { background: var(--surface); color: var(--red); }
+  .pill.red.solid { background: var(--red-soft); }
+
+  /* ---------- Logs ---------- */
+  #logs { padding-top: 64px; scroll-margin-top: 24px; }
+  .logs-intro { margin: 10px 0 0; font-size: 17px; }
+  .ok-card {
+    margin-top: 28px; display: flex; align-items: center; gap: 18px; padding: 24px 28px;
+    border-radius: var(--radius-md); background: var(--green-soft); color: #22694f; font-size: 18px; font-weight: 600;
+  }
+  .ok-card .icon-circle { background: var(--surface); color: var(--green); width: 48px; height: 48px; }
+
+  .error-card {
+    margin-top: 28px; padding: 28px 28px 24px 32px; border-radius: 22px; position: relative;
+    background: var(--surface); box-shadow: inset 0 0 0 1px var(--line); scroll-margin-top: 24px;
+  }
+  .error-card::before { content: ''; position: absolute; left: 0; top: 24px; bottom: 24px; width: 4px; border-radius: 0 4px 4px 0; background: var(--red); }
+  .error-card:target { box-shadow: inset 0 0 0 2px var(--red); }
+  .err-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+  .err-top h3 { margin: 12px 0 6px; font-size: 24px; font-weight: 700; }
+  .err-top .muted { font-size: 16px; }
+  .err-top .muted b { color: var(--ink-2); font-weight: 600; }
+  .err-explain { margin: 18px 0 0; font-size: 18px; line-height: 1.55; color: var(--ink-2); }
+  .err-block-title { margin: 26px 0 12px; font-size: 14px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+
+  .compare { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .compare > div { padding: 16px 18px; border-radius: 14px; min-width: 0; }
+  .compare .exp { background: var(--green-soft); }
+  .compare .rec { background: var(--red-soft); }
+  .compare span { display: block; font-size: 13px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; margin-bottom: 6px; }
+  .compare .exp span { color: #2f8f6c; }
+  .compare .rec span { color: var(--red); }
+  .compare code { font: 600 16px/1.4 ui-monospace, SFMono-Regular, Menlo, monospace; overflow-wrap: anywhere; }
+  .facts { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+  .fact { padding: 8px 12px; border-radius: 10px; background: var(--soft); font-size: 14px; color: var(--ink-2); overflow-wrap: anywhere; }
+  .fact b { color: var(--muted); font-weight: 600; margin-right: 6px; }
+  .fact code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+
+  .trail { list-style: none; margin: 0; padding: 0; }
+  .trail li { position: relative; display: grid; grid-template-columns: 22px 150px minmax(0, 1fr); align-items: center; gap: 12px; padding: 7px 0; }
+  .trail li::before { content: ''; position: absolute; left: 10px; top: 0; bottom: 0; width: 2px; background: var(--soft-2); }
+  .trail li:first-child::before { top: 50%; }
+  .trail li:last-child::before { bottom: 50%; }
+  .trail .node { position: relative; z-index: 1; width: 22px; height: 22px; border-radius: 50%; background: var(--soft-2); border: 4px solid var(--surface); }
+  .trail li:last-child .node { background: var(--red); }
+  .trail .lbl { font-size: 15px; color: var(--muted); font-weight: 600; }
+  .trail code {
+    justify-self: start; max-width: 100%; padding: 6px 10px; border-radius: 8px; background: var(--soft);
+    font: 14px/1.4 ui-monospace, SFMono-Regular, Menlo, monospace; color: var(--ink); overflow-wrap: anywhere;
+  }
+  .trail li:last-child code { background: var(--red-soft); color: #8f2126; font-weight: 600; }
+
+  .snippet { margin: 0; border-radius: 14px; background: var(--tooltip); color: #d8dae5; overflow: hidden; }
+  .snippet-head { display: flex; justify-content: space-between; gap: 12px; padding: 10px 16px; font: 13px ui-monospace, SFMono-Regular, Menlo, monospace; color: #9a9db0; border-bottom: 1px solid rgba(255,255,255,.08); }
+  .snippet-body { overflow-x: auto; padding: 8px 0; }
+  .code-line { display: grid; grid-template-columns: 52px 1fr; font: 14px/1.7 ui-monospace, SFMono-Regular, Menlo, monospace; white-space: pre; }
+  .code-line .ln { text-align: right; padding-right: 16px; color: #6b6e82; user-select: none; }
+  .code-line.hit { background: rgba(228,72,77,.22); }
+  .code-line.hit .ln { color: #ff9a9e; }
+  .code-line.hit .src::after { content: '  ← error here'; color: #ff9a9e; font-weight: 600; }
+
+  .hint { margin-top: 20px; display: flex; gap: 14px; padding: 16px 18px; border-radius: 14px; background: var(--blue-soft); font-size: 16px; line-height: 1.55; color: var(--ink-2); }
+  .hint svg { width: 22px; height: 22px; color: var(--blue-ink); flex: none; margin-top: 1px; }
+  .hint b { color: var(--ink); }
+
+  .err-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 20px; }
+  .btn-soft {
+    display: inline-flex; align-items: center; gap: 8px; padding: 10px 16px; border-radius: 999px; border: 0;
+    background: var(--soft); font-size: 15px; font-weight: 600; cursor: pointer; transition: background .15s;
+  }
+  .btn-soft:hover { background: var(--soft-2); }
+  .btn-soft svg { width: 18px; height: 18px; }
+  .raw-log { margin-top: 12px; }
+  .raw-log summary { cursor: pointer; font-size: 15px; font-weight: 600; color: var(--muted); padding: 6px 0; }
+  .raw-log pre {
+    margin: 8px 0 0; padding: 16px 18px; border-radius: 14px; background: var(--soft); color: var(--ink-2);
+    font: 13px/1.55 ui-monospace, SFMono-Regular, Menlo, monospace; white-space: pre-wrap; word-break: break-word; max-height: 320px; overflow: auto;
+  }
+  .browser-logs { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 6px; }
+  .browser-logs li { padding: 10px 14px; border-radius: 10px; background: var(--orange-soft); font: 13px/1.5 ui-monospace, SFMono-Regular, Menlo, monospace; overflow-wrap: anywhere; }
+  .browser-logs li b { font-family: var(--font); margin-right: 8px; text-transform: uppercase; font-size: 12px; color: #a8621f; }
+
+  .terminal { margin-top: 32px; border-radius: 20px; background: var(--tooltip); color: #d8dae5; overflow: hidden; }
+  .term-bar { display: flex; align-items: center; gap: 14px; padding: 14px 18px; border-bottom: 1px solid rgba(255,255,255,.08); flex-wrap: wrap; }
+  .term-dots { display: flex; gap: 7px; }
+  .term-dots i { width: 12px; height: 12px; border-radius: 50%; background: #3a3c4e; }
+  .term-dots i:first-child { background: #ff6159; } .term-dots i:nth-child(2) { background: #ffbd2e; } .term-dots i:nth-child(3) { background: #28c941; }
+  .term-title { font: 600 14px ui-monospace, SFMono-Regular, Menlo, monospace; color: #9a9db0; }
+  .seg { margin-left: auto; display: inline-flex; padding: 3px; border-radius: 999px; background: rgba(255,255,255,.08); }
+  .seg button { border: 0; background: transparent; color: #b8bbcb; padding: 6px 14px; border-radius: 999px; font-size: 14px; font-weight: 600; cursor: pointer; }
+  .seg button[aria-pressed="true"] { background: #fff; color: var(--ink); }
+  .term-copy { border: 0; background: rgba(255,255,255,.08); color: #d8dae5; width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; cursor: pointer; }
+  .term-copy svg { width: 17px; height: 17px; }
+  .term-body { padding: 14px 0; max-height: 560px; overflow: auto; font: 13.5px/1.75 ui-monospace, SFMono-Regular, Menlo, monospace; }
+  .tl { display: grid; grid-template-columns: 76px 22px minmax(0, 1fr) auto; gap: 10px; padding: 0 18px; }
+  .tl .t { color: #6b6e82; }
+  .tl .d { color: #6b6e82; padding-left: 12px; }
+  .tl .x { overflow-wrap: anywhere; }
+  .tl.sc { margin-top: 10px; color: #fff; font-weight: 700; }
+  .tl.sc:first-child { margin-top: 0; }
+  .tl.passed .s { color: #5fd3a6; }
+  .tl.failed { background: rgba(228,72,77,.16); }
+  .tl.failed .s, .tl.failed .x { color: #ff9a9e; }
+  .tl.skipped .s, .tl.skipped .x { color: #7d8095; }
+  .tl.hook .x { color: #7d8095; }
+  .tl.err .x { color: #ff9a9e; white-space: pre-wrap; }
+  .tl.err a { color: #fff; text-decoration: underline; }
+  .tl.warn .s, .tl.warn .x { color: #f5c26b; }
+
+  /* ---------- Archived snapshot banner ---------- */
+  .snapshot-banner {
+    display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-bottom: 32px;
+    padding: 16px 20px; border-radius: 16px; background: var(--orange-soft); color: #8a5318; font-size: 17px; font-weight: 600;
+  }
+  .snapshot-banner[hidden] { display: none; }
+  .snapshot-banner svg { width: 22px; height: 22px; }
+  .snapshot-banner a { margin-left: auto; color: var(--ink); text-decoration: underline; }
+
+  /* ---------- History ---------- */
+  #history { padding-top: 64px; scroll-margin-top: 24px; }
+  .panel { margin-top: 28px; padding: 26px 28px; border-radius: 22px; box-shadow: inset 0 0 0 1px var(--line); }
+  .panel-head { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+  .panel-head h3 { margin: 0; font-size: 22px; font-weight: 700; }
+  .panel-head p { margin: 6px 0 0; font-size: 16px; }
+
+  .run-table { margin-top: 18px; }
+  .run-row {
+    display: grid; align-items: center; gap: 16px;
+    grid-template-columns: 170px 180px 110px minmax(120px, 1fr) auto;
+    padding: 14px 12px; border-radius: 14px;
+  }
+  .result .rate { color: var(--muted); font-weight: 500; }
+  .icon-btn-xs { width: 36px; height: 36px; padding: 0; justify-content: center; }
+  .run-row + .run-row { box-shadow: inset 0 1px 0 var(--line); }
+  .run-row.head { padding-top: 0; padding-bottom: 10px; font-size: 13px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: var(--muted); }
+  .run-row.is-current { background: var(--blue-soft); box-shadow: none; }
+  .run-row.is-current + .run-row { box-shadow: none; }
+  .run-row.is-selected:not(.is-current) { background: var(--soft); }
+  .run-id b { display: block; font-size: 18px; font-weight: 700; }
+  .run-id span { font-size: 14px; color: var(--muted); }
+  .result { display: flex; align-items: center; gap: 10px; font-size: 16px; font-weight: 600; }
+  .bar { flex: 1; display: flex; height: 8px; border-radius: 999px; overflow: hidden; background: var(--soft-2); min-width: 60px; }
+  .bar i { display: block; height: 100%; }
+  .bar .p { background: var(--green); } .bar .f { background: var(--red); } .bar .s { background: var(--orange); }
+  .run-rate { font-size: 17px; font-weight: 700; }
+  .run-dur { font-size: 16px; font-weight: 600; }
+  .run-dur small { display: block; font-size: 13px; font-weight: 600; }
+  .run-dur small.good { color: var(--green); } .run-dur small.bad { color: var(--red); } .run-dur small.neutral { color: var(--muted); font-weight: 500; }
+  .fail-chips { display: flex; flex-wrap: wrap; gap: 6px; min-width: 0; }
+  .chip { padding: 4px 10px; border-radius: 999px; font-size: 13px; font-weight: 600; background: var(--red-soft); color: #8f2126; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .chip.ok { background: var(--green-soft); color: #22694f; }
+  .run-actions-cell { display: flex; gap: 8px; justify-content: flex-end; }
+  .btn-xs {
+    display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; border-radius: 999px; border: 0;
+    background: var(--soft); font-size: 14px; font-weight: 600; cursor: pointer; white-space: nowrap; transition: background .15s;
+  }
+  .btn-xs:hover { background: var(--soft-2); }
+  .btn-xs svg { width: 17px; height: 17px; }
+  .btn-xs.ghost { background: transparent; color: var(--muted); cursor: default; }
+  .is-current .btn-xs:not(.ghost) { background: var(--surface); }
+
+  .compare-pickers { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .compare-pickers .tag-ab { font-size: 13px; font-weight: 800; color: var(--muted); }
+  .swap-btn { width: 44px; height: 44px; border-radius: 50%; border: 0; background: var(--soft); display: grid; place-items: center; cursor: pointer; }
+  .swap-btn:hover { background: var(--soft-2); }
+  .swap-btn svg { width: 18px; height: 18px; }
+  .cmp-stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin-top: 22px; }
+  .cmp-stat { padding: 16px 18px; border-radius: 16px; background: var(--soft); min-width: 0; }
+  .cmp-stat span { display: block; font-size: 14px; font-weight: 600; color: var(--muted); }
+  .cmp-stat b { display: block; margin-top: 6px; font-size: 20px; font-weight: 700; }
+  .cmp-stat small { display: block; margin-top: 4px; font-size: 14px; font-weight: 600; }
+  .cmp-stat small.good { color: var(--green); } .cmp-stat small.bad { color: var(--red); } .cmp-stat small.neutral { color: var(--muted); font-weight: 500; }
+  .cmp-toolbar { display: flex; justify-content: flex-end; margin-top: 18px; }
+  .check { display: inline-flex; align-items: center; gap: 10px; font-size: 15px; font-weight: 600; cursor: pointer; }
+  .check input { width: 18px; height: 18px; accent-color: var(--blue-ink); }
+  .cmp-row {
+    display: grid; align-items: center; gap: 16px;
+    grid-template-columns: minmax(0, 1fr) 150px 150px 120px 120px;
+    padding: 14px 4px;
+  }
+  .cmp-row + .cmp-row { box-shadow: inset 0 1px 0 var(--line); }
+  .cmp-row.head { font-size: 13px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: var(--muted); padding-top: 4px; }
+  .cmp-name b { display: block; font-size: 16px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .cmp-name span { font-size: 14px; color: var(--muted); }
+  .cmp-name .why { display: block; margin-top: 4px; font-size: 13px; color: var(--red); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .cmp-cell { font-size: 15px; display: flex; align-items: center; gap: 8px; }
+  .cmp-cell .status { font-size: 15px; gap: 8px; }
+  .cmp-cell em { font-style: normal; color: var(--muted); }
+  .delta-txt { font-size: 15px; font-weight: 600; }
+  .delta-txt.good { color: var(--green); } .delta-txt.bad { color: var(--red); } .delta-txt.neutral { color: var(--muted); font-weight: 500; }
+  .change { justify-self: start; padding: 5px 12px; border-radius: 999px; font-size: 13px; font-weight: 700; background: var(--soft); color: var(--muted); white-space: nowrap; }
+  .change.fixed { background: var(--green-soft); color: #22694f; }
+  .change.broke { background: var(--red); color: #fff; }
+  .change.still { background: var(--red-soft); color: #8f2126; }
+  .change.new { background: var(--blue-soft); color: var(--blue-ink); }
+  .change.removed { background: var(--orange-soft); color: #8a5318; }
+
+  .matrix-wrap { margin-top: 18px; overflow-x: auto; padding-bottom: 6px; }
+  .matrix { border-collapse: separate; border-spacing: 0; min-width: 100%; }
+  .matrix th, .matrix td { padding: 6px 4px; text-align: center; font-size: 14px; white-space: nowrap; }
+  .matrix thead th { font-size: 13px; font-weight: 700; color: var(--muted); padding-bottom: 10px; }
+  .matrix thead th a { color: var(--muted); }
+  .matrix thead th a:hover { color: var(--ink); text-decoration: underline; }
+  .matrix th.cur, .matrix td.cur { background: var(--blue-soft); }
+  .matrix thead th.cur { border-radius: 10px 10px 0 0; color: var(--blue-ink); }
+  .matrix tbody tr:last-child td.cur { border-radius: 0 0 10px 10px; }
+  .matrix .sc-name { position: sticky; left: 0; z-index: 1; background: var(--surface); text-align: left; padding-right: 18px; max-width: 280px; }
+  .matrix .sc-name b { display: block; font-size: 15px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; }
+  .matrix .sc-name span { font-size: 13px; color: var(--muted); }
+  .cell { display: inline-block; width: 22px; height: 22px; border-radius: 7px; background: var(--soft-2); vertical-align: middle; }
+  .cell.passed { background: var(--green); }
+  .cell.failed { background: var(--red); }
+  .cell.skipped { background: var(--orange); }
+  .cell.absent { background: transparent; box-shadow: inset 0 0 0 1.5px var(--soft-2); }
+  .matrix .stat-col { padding-left: 16px; font-weight: 600; }
+  .flaky { padding: 3px 9px; border-radius: 999px; background: var(--orange-soft); color: #8a5318; font-size: 12px; font-weight: 800; letter-spacing: .03em; }
+  .matrix-legend { display: flex; flex-wrap: wrap; gap: 18px; margin-top: 14px; font-size: 14px; color: var(--muted); }
+  .matrix-legend span { display: inline-flex; align-items: center; gap: 8px; }
+  .matrix-legend .cell { width: 14px; height: 14px; border-radius: 4px; }
+
+  /* ---------- Right panel ---------- */
+  .right { border-left: 1px solid var(--line); padding: 16px 16px 24px; display: flex; flex-direction: column; min-width: 0; }
+  .run-card { background: var(--soft); border-radius: var(--radius-lg); padding: 44px 24px 36px; text-align: center; }
+  .donut { position: relative; width: 132px; height: 132px; margin: 0 auto; }
+  .donut svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+  .donut-center {
+    position: absolute; inset: 14px; border-radius: 50%; background: var(--surface);
+    display: grid; place-content: center; text-align: center;
+  }
+  .donut-center strong { font-size: 30px; font-weight: 800; line-height: 1; }
+  .donut-center span { font-size: 13px; color: var(--muted); margin-top: 4px; }
+  .donut .dot { position: absolute; right: 8px; bottom: 10px; width: 22px; height: 22px; border-radius: 50%; border: 4px solid var(--soft); }
+  .run-card h3 { margin: 22px 0 6px; font-size: 22px; font-weight: 600; }
+  .run-card p { margin: 0; font-size: 18px; color: var(--muted); overflow-wrap: anywhere; }
+  .run-actions { display: flex; justify-content: center; gap: 28px; margin-top: 32px; }
+  .btn-icon {
+    width: 56px; height: 56px; border-radius: 50%; background: var(--surface); border: 0;
+    display: grid; place-items: center; cursor: pointer; transition: transform .15s, box-shadow .15s;
+  }
+  .btn-icon:hover { transform: translateY(-2px); box-shadow: 0 8px 18px rgba(20,21,34,.08); }
+  .btn-icon[aria-disabled="true"] { opacity: .4; pointer-events: none; }
+  .btn-icon svg { width: 24px; height: 24px; }
+
+  .divider { display: flex; align-items: center; gap: 36px; margin: 40px 0 16px; font-size: 20px; font-weight: 500; scroll-margin-top: 24px; }
+  .divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: var(--line); }
+
+  .activity { display: flex; flex-direction: column; gap: 10px; padding: 0 8px; flex: 1; }
+  .act { display: grid; grid-template-columns: 52px minmax(0, 1fr); gap: 18px; padding: 18px 0; }
+  .avatar { position: relative; width: 52px; height: 52px; border-radius: 50%; display: grid; place-items: center; font-weight: 700; font-size: 17px; }
+  .avatar .dot { position: absolute; right: -1px; bottom: 1px; width: 13px; height: 13px; border-radius: 50%; border: 2.5px solid var(--surface); }
+  .act-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
+  .act-head strong { font-size: 20px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .act-head span { font-size: 16px; color: var(--muted); white-space: nowrap; }
+  .act-sub { margin-top: 6px; font-size: 17px; color: var(--muted); line-height: 1.45; }
+  .act-sub a { color: var(--blue-ink); }
+  .act-sub a:hover { text-decoration: underline; }
+  .bubble {
+    position: relative; margin-top: 14px; padding: 18px 20px; border-radius: 16px;
+    background: var(--blue-soft); font-size: 17px; line-height: 1.45; color: var(--ink-2);
+    overflow-wrap: anywhere;
+  }
+  .bubble .badge {
+    position: absolute; right: -10px; bottom: -14px; width: 34px; height: 34px; border-radius: 50%;
+    background: var(--surface); box-shadow: 0 2px 6px rgba(20,21,34,.12);
+    display: grid; place-items: center; color: var(--red);
+  }
+  .bubble .badge svg { width: 18px; height: 18px; }
+  .file-card {
+    margin-top: 14px; display: flex; align-items: center; gap: 16px; padding: 14px 18px; border-radius: 16px;
+    background: var(--blue-soft); cursor: pointer; border: 0; width: 100%; text-align: left;
+  }
+  .file-card .thumb { width: 44px; height: 44px; border-radius: 50%; background: var(--ink); color: #fff; display: grid; place-items: center; flex: none; }
+  .file-card .thumb svg { width: 20px; height: 20px; }
+  .file-card b { display: block; font-size: 17px; font-weight: 600; }
+  .file-card span { font-size: 15px; color: var(--muted); }
+  .file-card .dl { margin-left: auto; color: var(--blue-ink); }
+  .file-card .dl svg { width: 24px; height: 24px; }
+
+  .search {
+    margin: 24px 8px 0; display: flex; align-items: center; gap: 14px;
+    padding: 0 22px; height: 72px; border-radius: 18px; background: var(--soft);
+    position: sticky; bottom: 16px;
+    box-shadow: 0 0 0 16px var(--surface);
+  }
+  .search svg { width: 22px; height: 22px; color: var(--muted); flex: none; }
+  .search input { flex: 1; min-width: 0; border: 0; background: transparent; font-size: 18px; outline: none; }
+  .search input::placeholder { color: var(--muted); }
+  .search kbd { font: 600 13px var(--font); color: var(--muted); background: var(--surface); padding: 4px 8px; border-radius: 8px; }
+
+  /* ---------- Lightbox ---------- */
+  .lightbox {
+    position: fixed; inset: 0; z-index: 10; background: rgba(20,21,34,.72);
+    display: grid; place-items: center; padding: 32px 16px;
+  }
+  .lightbox[hidden] { display: none; }
+  .lightbox figure { margin: 0; max-width: min(1100px, 100%); }
+  .lightbox img, .lightbox video { display: block; max-width: 100%; max-height: 80vh; border-radius: 14px; background: #000; }
+  .lightbox img { background: #fff; }
+  .lightbox [hidden] { display: none; }
+
+  /* ---------- Videos ---------- */
+  #videos { padding-top: 64px; scroll-margin-top: 24px; }
+  .video-grid { margin-top: 28px; display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px; }
+  .video-card { border-radius: 20px; background: var(--soft); overflow: hidden; scroll-margin-top: 24px; }
+  .video-card.failed { box-shadow: inset 0 0 0 2px var(--red); }
+  .video-card:target { box-shadow: inset 0 0 0 3px var(--blue); }
+  .video-card video { display: block; width: 100%; aspect-ratio: 16 / 9; background: #0e0f17; }
+  .video-meta { display: flex; align-items: flex-start; gap: 14px; padding: 16px 18px 18px; }
+  .video-meta .feature-icon { width: 44px; height: 44px; flex: none; }
+  .video-meta .feature-icon svg { width: 22px; height: 22px; }
+  .video-meta b { display: block; font-size: 17px; font-weight: 600; line-height: 1.35; }
+  .video-meta .sub { margin-top: 6px; display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px; font-size: 14px; color: var(--muted); }
+  .video-meta .status { font-size: 14px; gap: 8px; }
+  .video-meta .expand { margin-left: auto; flex: none; background: var(--surface); }
+  .video-meta .expand:hover { background: var(--blue-soft); }
+  .video-error { margin: 0 18px 18px; padding: 12px 14px; border-radius: 12px; background: var(--red-soft); color: #8f2126; font-size: 14px; line-height: 1.45; }
+  .video-error a { color: var(--red); font-weight: 700; }
+  .no-video { aspect-ratio: 16 / 9; display: grid; place-items: center; color: var(--muted); font-size: 15px; background: var(--soft-2); }
+  .lightbox figcaption { margin-top: 12px; color: #fff; font-size: 16px; text-align: center; }
+  .lightbox button {
+    position: absolute; top: 20px; right: 20px; width: 48px; height: 48px; border-radius: 50%;
+    border: 0; background: var(--surface); cursor: pointer; display: grid; place-items: center;
+  }
+
+  /* ---------- Responsive ---------- */
+  @media (max-width: 1400px) {
+    .app { grid-template-columns: 240px minmax(0, 1fr); }
+    .sidebar { padding: 40px 24px 32px 28px; }
+    .right { grid-column: 1 / -1; border-left: 0; border-top: 1px solid var(--line); display: grid; grid-template-columns: 360px minmax(0, 1fr); gap: 0 32px; padding: 24px; }
+    .run-card { grid-row: 1 / span 3; align-self: start; }
+    .divider { margin-top: 8px; }
+    .search { position: static; }
+  }
+  @media (max-width: 1100px) {
+    .main { padding: 36px 32px 48px; }
+    .stats { grid-template-columns: 1fr; gap: 24px; }
+    .stat, .stat:first-child { padding: 0; }
+    .stat + .stat { border-left: 0; }
+    .run-row.head, .cmp-row.head { display: none; }
+    .run-row { grid-template-columns: minmax(0, 1fr) auto; gap: 8px 12px; }
+    .run-row > .result, .run-row > .fail-chips { grid-column: 1 / -1; }
+    .run-row > .run-actions-cell { grid-column: 1 / -1; justify-content: flex-start; }
+    .cmp-stats { grid-template-columns: 1fr 1fr; }
+    .cmp-row { grid-template-columns: 1fr 1fr; gap: 8px 12px; }
+    .cmp-row .cmp-name { grid-column: 1 / -1; }
+  }
+  @media (max-width: 860px) {
+    .app { grid-template-columns: minmax(0, 1fr); margin: 0; border-radius: 0; min-height: 100vh; }
+    .sidebar {
+      position: sticky; top: 0; z-index: 5; height: auto; max-height: none;
+      flex-direction: row; align-items: center; gap: 16px; padding: 12px 16px;
+      background: var(--surface); border-right: 0; border-bottom: 1px solid var(--line);
+    }
+    .logo { font-size: 22px; }
+    .logo-mark { width: 30px; height: 30px; }
+    .nav { margin: 0 0 0 auto; flex-direction: row; gap: 4px; overflow-x: auto; }
+    .nav-item { padding: 8px; }
+    .nav-item span:not(.nav-badge), .nav-badge { display: none; }
+    .promo, .side-links { display: none; }
+    .main { padding: 28px 16px 40px; }
+    .header { flex-direction: column; padding-bottom: 32px; }
+    .header h1 { font-size: 32px; }
+    .header p { font-size: 18px; }
+    .section-head { flex-wrap: wrap; }
+    .section-head h2 { font-size: 24px; }
+    .section-head .left { gap: 16px; }
+    .section-head .sub { padding-left: 16px; font-size: 16px; }
+    #performance, #scenarios { padding-top: 40px; }
+    .chart { height: 260px; }
+    .legend { padding-left: 0; }
+    .scenario-row {
+      grid-template-columns: 52px auto minmax(0, 1fr) 44px; gap: 8px 14px;
+      grid-template-areas: "icon name name more" "icon status duration more";
+    }
+    .feature-icon { width: 52px; height: 52px; grid-area: icon; }
+    .scenario-row > div { grid-area: name; }
+    .scenario-row .status { grid-area: status; font-size: 15px; }
+    .scenario-row .duration { grid-area: duration; font-size: 15px; }
+    .scenario-row .duration svg { width: 18px; height: 18px; }
+    .scenario-row .more-btn { grid-area: more; }
+    .search kbd { display: none; }
+    .scenario-name { white-space: normal; font-size: 17px; }
+    .scenario-detail { padding: 4px 12px 16px; }
+    .step { grid-template-columns: 28px minmax(0, 1fr); }
+    .step-time, .shot-btn { grid-column: 2; justify-self: start; }
+    #logs, #history { padding-top: 40px; }
+    .panel { padding: 20px 16px; }
+    .compare-pickers { width: 100%; }
+    .compare-pickers .select { flex: 1 1 calc(100% - 40px); }
+    .compare-pickers .swap-btn { margin-left: 24px; }
+    .compare-pickers .select select { width: 100%; }
+    .error-card { padding: 22px 16px 18px 20px; }
+    .err-top h3 { font-size: 20px; }
+    .err-explain { font-size: 16px; }
+    .compare { grid-template-columns: 1fr; }
+    .trail li { grid-template-columns: 22px minmax(0, 1fr); }
+    .trail li .lbl { grid-column: 2; }
+    .trail li code { grid-column: 2; }
+    .trail li .node { grid-row: 1 / span 2; }
+    .tl { grid-template-columns: 58px 18px minmax(0, 1fr); padding: 0 12px; }
+    .tl .d { display: none; }
+    .seg { margin-left: 0; }
+    .right { display: flex; padding: 16px; }
+    .run-card { padding: 32px 16px 28px; align-self: stretch; }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <a class="logo" href="#overview" aria-label="testboard home">
+      <svg class="logo-mark" viewBox="0 0 40 40" fill="currentColor" aria-hidden="true">
+        <rect x="4" y="4" width="14" height="14" rx="7"/><rect x="22" y="4" width="14" height="14" rx="4"/>
+        <rect x="4" y="22" width="14" height="14" rx="4"/><path d="M22 29a7 7 0 1 1 14 0a7 7 0 1 1-14 0Zm4.6 0l1.8 1.8l3.4-3.6" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <span>testboard</span>
+    </a>
+    <nav class="nav" aria-label="Sections">
+      <a class="nav-item active" href="#overview" data-section="overview"><svg data-icon="home"></svg><span>Overview</span></a>
+      <a class="nav-item" href="#performance" data-section="performance"><svg data-icon="chart"></svg><span>Performance</span></a>
+      <a class="nav-item" href="#scenarios" data-section="scenarios"><svg data-icon="tasks"></svg><span>Scenarios</span><span class="nav-badge" id="nav-count"></span></a>
+      <a class="nav-item" href="#logs" data-section="logs"><svg data-icon="terminal"></svg><span>Logs</span><span class="nav-badge" id="nav-errors"></span></a>
+      <a class="nav-item" href="#videos" data-section="videos"><svg data-icon="video"></svg><span>Videos</span><span class="nav-badge" id="nav-videos"></span></a>
+      <a class="nav-item" href="#history" data-section="history"><svg data-icon="history"></svg><span>History</span><span class="nav-badge" id="nav-runs"></span></a>
+      <a class="nav-item" href="#activity" data-section="activity"><svg data-icon="team"></svg><span>Activity</span></a>
+    </nav>
+    <div class="promo">
+      <h3>Allure Report</h3>
+      <p>Need deeper details? Open the full Allure report</p>
+      <a class="btn-pill" id="promo-allure" href="#">Open Allure</a>
+    </div>
+    <div class="side-links">
+      <a class="nav-item" id="link-cucumber" href="#"><svg data-icon="info"></svg><span>Cucumber report</span></a>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="snapshot-banner" id="snapshot-banner" hidden></div>
+    <header class="header" id="overview">
+      <div>
+        <h1 id="greeting">Hello</h1>
+        <p class="muted" id="subtitle"></p>
+      </div>
+      <div class="date-pill"><span id="run-date"></span><span class="icon-circle"><svg data-icon="calendar"></svg></span></div>
+    </header>
+
+    <section class="stats" id="stats" aria-label="Summary"></section>
+
+    <section id="performance">
+      <div class="section-head">
+        <h2>Performance</h2>
+        <label class="select">
+          <select id="chart-mode" aria-label="Chart mode">
+            <option value="scenario">Per scenario</option>
+            <option value="history">Run history</option>
+          </select>
+          <svg data-icon="chevron"></svg>
+        </label>
+      </div>
+      <div class="chart" id="chart"><div class="chart-tooltip" id="chart-tooltip" hidden></div></div>
+      <div class="legend" id="legend"></div>
+    </section>
+
+    <section id="scenarios">
+      <div class="section-head">
+        <div class="left"><h2>Scenarios</h2><span class="sub" id="done-rate"></span></div>
+        <label class="select outline">
+          <select id="status-filter" aria-label="Filter by status">
+            <option value="all">All</option>
+            <option value="passed">Passed</option>
+            <option value="failed">Failed</option>
+            <option value="skipped">Skipped</option>
+          </select>
+          <svg data-icon="chevron"></svg>
+        </label>
+      </div>
+      <div class="scenario-list" id="scenario-list"></div>
+    </section>
+
+    <section id="logs">
+      <div class="section-head">
+        <div class="left"><h2>Logs</h2><span class="sub" id="logs-count"></span></div>
+      </div>
+      <p class="logs-intro muted" id="logs-intro"></p>
+      <div id="error-list"></div>
+      <div class="terminal">
+        <div class="term-bar">
+          <span class="term-dots"><i></i><i></i><i></i></span>
+          <span class="term-title">execution.log</span>
+          <span class="seg" role="group" aria-label="Log filter">
+            <button type="button" data-log-filter="all" aria-pressed="true">All steps</button>
+            <button type="button" data-log-filter="errors" aria-pressed="false">Errors only</button>
+          </span>
+          <button class="term-copy" type="button" id="copy-log" title="Copy log" aria-label="Copy log"><svg data-icon="copy"></svg></button>
+        </div>
+        <div class="term-body" id="term-body"></div>
+      </div>
+    </section>
+
+    <section id="videos">
+      <div class="section-head">
+        <div class="left"><h2>Videos</h2><span class="sub" id="videos-count"></span></div>
+        <label class="select outline">
+          <select id="video-filter" aria-label="Filter videos by status">
+            <option value="all">All</option>
+            <option value="failed">Failed</option>
+            <option value="passed">Passed</option>
+          </select>
+          <svg data-icon="chevron"></svg>
+        </label>
+      </div>
+      <p class="logs-intro muted">Screen recording of every scenario in this run. Failed scenarios are outlined in red.</p>
+      <div class="video-grid" id="video-grid"></div>
+    </section>
+
+    <section id="history">
+      <div class="section-head">
+        <div class="left"><h2>History</h2><span class="sub" id="history-count"></span></div>
+      </div>
+      <p class="logs-intro muted">Every test run is kept here. Open any run to see its full dashboard, or compare two runs side by side.</p>
+
+      <div class="panel">
+        <div class="panel-head"><div><h3>All runs</h3><p class="muted">Newest first</p></div></div>
+        <div class="run-table" id="run-table"></div>
+      </div>
+
+      <div class="panel" id="compare">
+        <div class="panel-head">
+          <div><h3>Compare runs</h3><p class="muted">Pick any two runs to see what changed</p></div>
+          <div class="compare-pickers">
+            <span class="tag-ab">A</span>
+            <label class="select"><select id="cmp-a" aria-label="Run A"></select><svg data-icon="chevron"></svg></label>
+            <button class="swap-btn" type="button" id="cmp-swap" title="Swap A and B" aria-label="Swap A and B"><svg data-icon="swap"></svg></button>
+            <span class="tag-ab">B</span>
+            <label class="select"><select id="cmp-b" aria-label="Run B"></select><svg data-icon="chevron"></svg></label>
+          </div>
+        </div>
+        <div class="cmp-stats" id="cmp-stats"></div>
+        <div class="cmp-toolbar"><label class="check"><input type="checkbox" id="cmp-changes">Only show changes</label></div>
+        <div id="cmp-table"></div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head"><div><h3>Scenario timeline</h3><p class="muted">Each square is one run. Hover a square for details, click a run number to open it.</p></div></div>
+        <div class="matrix-wrap" id="matrix"></div>
+        <div class="matrix-legend">
+          <span><i class="cell passed"></i>Passed</span>
+          <span><i class="cell failed"></i>Failed</span>
+          <span><i class="cell skipped"></i>Skipped</span>
+          <span><i class="cell absent"></i>Not run</span>
+          <span><span class="flaky">FLAKY</span>Passed and failed in different runs</span>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <aside class="right">
+    <div class="run-card">
+      <div class="donut" id="donut"></div>
+      <h3 id="run-title"></h3>
+      <p id="run-meta"></p>
+      <div class="run-actions">
+        <a class="btn-icon" id="action-allure" href="#" title="Allure report" aria-label="Allure report"><svg data-icon="chart"></svg></a>
+        <a class="btn-icon" id="action-videos" href="#videos" title="Videos" aria-label="Videos"><svg data-icon="video"></svg></a>
+        <a class="btn-icon" id="action-cucumber" href="#" title="Cucumber HTML report" aria-label="Cucumber HTML report"><svg data-icon="more-v"></svg></a>
+      </div>
+    </div>
+    <div class="divider" id="activity"><span>Activity</span></div>
+    <div class="activity" id="activity-list"></div>
+    <label class="search">
+      <svg data-icon="search"></svg>
+      <input id="search" type="search" placeholder="Search scenario..." autocomplete="off">
+      <kbd>/</kbd>
+    </label>
+  </aside>
+</div>
+
+<div class="lightbox" id="lightbox" hidden role="dialog" aria-modal="true" aria-label="Preview">
+  <button type="button" id="lightbox-close" aria-label="Close"><svg data-icon="close"></svg></button>
+  <figure>
+    <img id="lightbox-img" alt="">
+    <video id="lightbox-video" controls playsinline hidden></video>
+    <figcaption id="lightbox-caption"></figcaption>
+  </figure>
+</div>
+
+<script id="report-data" type="application/json">__REPORT_DATA__</script>
+<script>
+(() => {
+  const DATA = JSON.parse(document.getElementById('report-data').textContent);
+  const $ = id => document.getElementById(id);
+
+  // ---------- Icons ----------
+  const P = 'fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"';
+  const ICONS = {
+    home: `<path ${P} d="M4 10.5 12 4l8 6.5V19a1 1 0 0 1-1 1h-4.5v-5.5h-5V20H5a1 1 0 0 1-1-1z"/>`,
+    chart: `<rect ${P} x="3.5" y="3.5" width="17" height="17" rx="5"/><path ${P} d="m7.5 14.5 3-3 2.5 2.5 3.5-4"/><path ${P} d="M14 10h2.5v2.5"/>`,
+    tasks: `<rect ${P} x="3.5" y="3.5" width="17" height="17" rx="4"/><path ${P} d="m7 9 1.3 1.3L10.5 8M13 9.2h4M7 15l1.3 1.3L10.5 14M13 15.2h4"/>`,
+    team: `<circle ${P} cx="12" cy="7" r="3"/><circle ${P} cx="6.5" cy="16.5" r="3"/><circle ${P} cx="17.5" cy="16.5" r="3"/>`,
+    info: `<circle ${P} cx="12" cy="12" r="8.5"/><path ${P} d="M12 11v5M12 8h.01"/>`,
+    video: `<rect ${P} x="3" y="6.5" width="12.5" height="11" rx="2.5"/><path ${P} d="m15.5 10.5 5-3v9l-5-3"/>`,
+    calendar: `<rect ${P} x="4" y="5" width="16" height="15" rx="3"/><path ${P} d="M8 3v4M16 3v4M4 10h16M8.5 14h3"/>`,
+    chevron: `<path ${P} d="m6 9 6 6 6-6"/>`,
+    thumb: `<path ${P} d="M7.5 10.5V20H5a1 1 0 0 1-1-1v-7.5a1 1 0 0 1 1-1zM7.5 10.5 11 4a2 2 0 0 1 2.6 2.2L13 10h5.2a2 2 0 0 1 2 2.4l-1.3 6A2 2 0 0 1 16.9 20H7.5"/>`,
+    timer: `<circle ${P} cx="12" cy="13.5" r="7"/><path ${P} d="M12 13.5V10M10 3h4M18 7l1.5-1.5"/><path ${P} d="M12 13.5l2 1.5"/>`,
+    trend: `<rect ${P} x="3.5" y="3.5" width="17" height="17" rx="5"/><path ${P} d="m7.5 15 3-3.5 2.5 2 3.5-4.5"/>`,
+    clock: `<circle cx="12" cy="12" r="9" fill="currentColor"/><path d="M12 7.5V12l3 2" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/>`,
+    dots: `<circle cx="5" cy="12" r="1.8" fill="currentColor"/><circle cx="12" cy="12" r="1.8" fill="currentColor"/><circle cx="19" cy="12" r="1.8" fill="currentColor"/>`,
+    'more-v': `<circle cx="12" cy="5" r="1.8" fill="currentColor"/><circle cx="12" cy="12" r="1.8" fill="currentColor"/><circle cx="12" cy="19" r="1.8" fill="currentColor"/>`,
+    search: `<circle ${P} cx="11" cy="11" r="6.5"/><path ${P} d="m16 16 4 4"/>`,
+    close: `<path ${P} d="M6 6l12 12M18 6 6 18"/>`,
+    check: `<path fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" d="m5 12.5 4.5 4.5L19 7.5"/>`,
+    cross: `<path fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" d="M7 7l10 10M17 7 7 17"/>`,
+    minus: `<path fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" d="M7 12h10"/>`,
+    camera: `<path ${P} d="M4 8.5A2.5 2.5 0 0 1 6.5 6h1.8L10 4h4l1.7 2h1.8A2.5 2.5 0 0 1 20 8.5v8a2.5 2.5 0 0 1-2.5 2.5h-11A2.5 2.5 0 0 1 4 16.5z"/><circle ${P} cx="12" cy="12.5" r="3.2"/>`,
+    image: `<rect ${P} x="4" y="4" width="16" height="16" rx="3"/><circle ${P} cx="9.5" cy="9.5" r="1.5"/><path ${P} d="m20 15-4-4-8 9"/>`,
+    download: `<circle ${P} cx="12" cy="12" r="8.5"/><path ${P} d="M12 8v7.5M9 12.8l3 3 3-3"/>`,
+    alert: `<path fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" d="M12 7v6M12 17h.01"/>`,
+    triUp: `<path d="M12 5 21 19H3z" fill="currentColor"/>`,
+    triDown: `<path d="M12 19 3 5h18z" fill="currentColor"/>`,
+    table: `<rect ${P} x="3.5" y="4.5" width="17" height="15" rx="3"/><path ${P} d="M3.5 9.5h17M3.5 14.5h17M9.5 9.5v10"/>`,
+    move: `<path ${P} d="M12 3v18M3 12h18M9 6l3-3 3 3M9 18l3 3 3-3M6 9l-3 3 3 3M18 9l3 3-3 3"/>`,
+    resize: `<rect ${P} x="3.5" y="3.5" width="17" height="17" rx="3"/><path ${P} d="M13 20.5 20.5 13M17 20.5l3.5-3.5"/>`,
+    form: `<rect ${P} x="5" y="3.5" width="14" height="17" rx="3"/><path ${P} d="M8.5 8h7M8.5 12h7M8.5 16h4"/>`,
+    pulse: `<circle ${P} cx="12" cy="12" r="8.5"/><path ${P} d="M6.5 12.5h2.5l1.5-3 3 6 1.5-3h2.5"/>`,
+    terminal: `<rect ${P} x="3.5" y="4.5" width="17" height="15" rx="3"/><path ${P} d="m7.5 10 2.5 2-2.5 2M12.5 15h4"/>`,
+    copy: `<rect ${P} x="8" y="8" width="12" height="12" rx="2.5"/><path ${P} d="M16 8V6.5A2.5 2.5 0 0 0 13.5 4h-7A2.5 2.5 0 0 0 4 6.5v7A2.5 2.5 0 0 0 6.5 16H8"/>`,
+    bulb: `<path ${P} d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.6.4 1 1.1 1 1.9V16h5v-.2c0-.8.4-1.5 1-1.9A6 6 0 0 0 12 3z"/>`,
+    checkCircle: `<circle ${P} cx="12" cy="12" r="8.5"/><path ${P} d="m8 12.5 2.8 2.8L16.5 9.5"/>`,
+    history: `<path ${P} d="M4 12a8 8 0 1 0 2.4-5.7M4 4.5v3.8h3.8"/><path ${P} d="M12 8v4.2l2.8 1.8"/>`,
+    swap: `<path ${P} d="M7 7h12l-3-3M17 17H5l3 3"/>`,
+    external: `<path ${P} d="M14 4h6v6M20 4l-8.5 8.5M18 14v4a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4"/>`,
+    archive: `<rect ${P} x="3.5" y="4.5" width="17" height="4.5" rx="1.5"/><path ${P} d="M5 9v9a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V9M10 13h4"/>`,
+  };
+  const icon = (name, attrs = '') => `<svg viewBox="0 0 24 24" aria-hidden="true" ${attrs}>${ICONS[name] || ''}</svg>`;
+  const hydrateIcons = root => root.querySelectorAll('svg[data-icon]').forEach(el => {
+    el.setAttribute('viewBox', '0 0 24 24');
+    el.setAttribute('aria-hidden', 'true');
+    el.innerHTML = ICONS[el.dataset.icon] || '';
+  });
+
+  // ---------- Helpers ----------
+  const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const css = name => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+  const pct = (a, b) => (b ? Math.round((a / b) * 100) : 0);
+  function fmtDuration(ms) {
+    if (ms == null) return '–';
+    const s = ms / 1000;
+    if (s < 60) return `${s < 10 ? s.toFixed(1) : Math.round(s)}s`;
+    const m = Math.floor(s / 60);
+    return `${m}m ${Math.round(s - m * 60)}s`;
+  }
+  const fmtDate = iso => new Date(iso).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }).replace(/ (\d{4})$/, ', $1');
+  const fmtTime = iso => new Date(iso).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+
+  const FEATURE_TONES = [
+    { bg: 'var(--blue-soft)', fg: 'var(--blue-ink)' },
+    { bg: 'var(--orange-soft)', fg: '#c77a2c' },
+    { bg: 'var(--soft)', fg: 'var(--ink)' },
+    { bg: 'var(--green-soft)', fg: '#2f8f6c' },
+  ];
+  const tone = i => FEATURE_TONES[i % FEATURE_TONES.length];
+  function featureIcon(name) {
+    if (/table/i.test(name)) return 'table';
+    if (/drag|drop/i.test(name)) return 'move';
+    if (/resiz/i.test(name)) return 'resize';
+    if (/form|regist|login/i.test(name)) return 'form';
+    return 'pulse';
+  }
+  const initials = name => name.split(/\s+/).filter(Boolean).slice(0, 2).map(w => w[0].toUpperCase()).join('');
+  const statusColor = s => ({ passed: 'var(--green)', failed: 'var(--red)' }[s] || 'var(--orange)');
+  const statusLabel = s => s.charAt(0).toUpperCase() + s.slice(1);
+
+  function setLink(el, href) {
+    if (href) { el.href = href; el.target = '_blank'; el.rel = 'noopener'; }
+    else { el.removeAttribute('href'); el.setAttribute('aria-disabled', 'true'); el.title = (el.title || '') + ' (not generated yet)'; }
+  }
+
+  // ---------- Header & stats ----------
+  const S = DATA.summary;
+  const PREV = DATA.previous;
+  const passRate = pct(S.passed, S.total);
+
+  $('greeting').textContent = `Hello, ${DATA.user}`;
+  const FAILURES = DATA.scenarios.filter(s => s.failure);
+  $('subtitle').innerHTML = S.failed
+    ? `${S.failed} of ${S.total} scenario${S.total > 1 ? 's' : ''} failed. <a href="#logs" style="color:var(--red);font-weight:700">See what went wrong →</a>`
+    : S.total ? `Track test results here. All ${S.total} scenarios passed!` : 'No scenarios were run.';
+  if (FAILURES.length) {
+    $('nav-errors').textContent = FAILURES.length;
+    $('nav-errors').style.cssText = 'background:var(--red-soft);color:var(--red)';
+    $('nav-errors').title = `${FAILURES.length} error${FAILURES.length > 1 ? 's' : ''}`;
+  } else {
+    $('nav-errors').remove();
+  }
+  $('run-date').textContent = `${fmtDate(DATA.runAt)} · ${fmtTime(DATA.runAt)}`;
+  $('nav-count').textContent = S.total;
+  $('done-rate').textContent = `Passed ${passRate}%`;
+
+  function delta(diff, { unit = '', higherIsBetter = true, format = v => v } = {}) {
+    if (!PREV) return `<span class="delta neutral">first run</span>`;
+    if (!diff) return `<span class="delta neutral" title="Same as run #${PREV.runNumber}">±0</span>`;
+    const good = higherIsBetter ? diff > 0 : diff < 0;
+    const sign = diff > 0 ? '+' : '-';
+    return `<span class="delta ${good ? 'good' : 'bad'}" title="vs run #${PREV.runNumber}">${icon(diff > 0 ? 'triUp' : 'triDown')}${sign}${format(Math.abs(diff))}${unit}</span>`;
+  }
+
+  const prevRate = PREV ? pct(PREV.passed, PREV.total) : 0;
+  $('stats').innerHTML = [
+    { icon: 'thumb', label: 'Passed', value: `${S.passed}<span class="muted" style="font-size:20px;font-weight:600"> / ${S.total}</span>`, delta: delta(PREV ? S.passed - PREV.passed : 0, { unit: ' scenarios' }) },
+    { icon: 'timer', label: 'Duration', value: fmtDuration(S.durationMs), delta: delta(PREV ? S.durationMs - PREV.durationMs : 0, { higherIsBetter: false, format: fmtDuration }) },
+    { icon: 'trend', label: 'Pass rate', value: `${passRate}%`, delta: delta(PREV ? passRate - prevRate : 0, { unit: '%' }) },
+  ].map(s => `
+    <div class="stat">
+      <span class="icon-circle">${icon(s.icon)}</span>
+      <div>
+        <div class="stat-label">${s.label}</div>
+        <div class="stat-value"><strong>${s.value}</strong>${s.delta}</div>
+      </div>
+    </div>`).join('');
+
+  // ---------- Run card ----------
+  (function renderRunCard() {
+    const r = 54, c = 2 * Math.PI * r;
+    const passLen = S.total ? (S.passed / S.total) * c : 0;
+    const failLen = S.total ? (S.failed / S.total) * c : 0;
+    $('donut').innerHTML = `
+      <svg viewBox="0 0 132 132" aria-hidden="true">
+        <circle cx="66" cy="66" r="${r}" fill="none" stroke="var(--soft-2)" stroke-width="12"/>
+        <circle cx="66" cy="66" r="${r}" fill="none" stroke="var(--green)" stroke-width="12" stroke-linecap="round"
+          stroke-dasharray="${passLen} ${c}" />
+        ${failLen ? `<circle cx="66" cy="66" r="${r}" fill="none" stroke="var(--red)" stroke-width="12" stroke-linecap="round"
+          stroke-dasharray="${failLen} ${c}" stroke-dashoffset="${-passLen}" />` : ''}
+      </svg>
+      <div class="donut-center"><strong>${passRate}%</strong><span>pass rate</span></div>
+      <span class="dot" style="background:${S.failed ? 'var(--red)' : 'var(--green)'}"></span>`;
+    $('donut').setAttribute('role', 'img');
+    $('donut').setAttribute('aria-label', `${S.passed} passed, ${S.failed} failed, ${S.skipped} skipped`);
+    $('run-title').textContent = `Run #${DATA.runNumber}`;
+    $('run-meta').textContent = `@${DATA.browser.toLowerCase()} · ${DATA.baseUrl.replace(/^https?:\/\//, '')}`;
+    setLink($('action-allure'), DATA.links.allure);
+    setLink($('action-cucumber'), DATA.links.cucumber);
+    setLink($('promo-allure'), DATA.links.allure);
+    setLink($('link-cucumber'), DATA.links.cucumber);
+  })();
+
+  // ---------- Chart ----------
+  const chartEl = $('chart');
+  const tooltip = $('chart-tooltip');
+
+  function chartModel(mode) {
+    if (mode === 'history') {
+      const runs = DATA.history;
+      return {
+        series: [{ name: 'Run duration', color: css('--blue'), area: true }],
+        points: runs.map(run => ({
+          label: `#${run.runNumber}`,
+          title: `Run #${run.runNumber} · ${fmtDate(run.runAt)}`,
+          values: [run.durationMs / 1000],
+          extra: [{ name: 'Passed', value: `${run.passed}/${run.total}`, color: run.failed ? css('--red') : css('--green') }],
+        })),
+      };
+    }
+    return {
+      series: [
+        { name: 'This run', color: css('--blue'), area: true },
+        { name: PREV ? `Run #${PREV.runNumber}` : 'Previous run', color: css('--orange') },
+      ],
+      points: DATA.scenarios.map(s => ({
+        label: String(s.index).padStart(2, '0'),
+        title: s.name,
+        values: [s.durationMs / 1000, s.previousDurationMs == null ? null : s.previousDurationMs / 1000],
+      })),
+    };
+  }
+
+  function niceMax(v) {
+    if (v <= 0) return 4;
+    const step = Math.pow(10, Math.floor(Math.log10(v)));
+    const n = v / step;
+    const nice = n <= 1 ? 1 : n <= 2 ? 2 : n <= 4 ? 4 : n <= 5 ? 5 : 10;
+    return nice * step;
+  }
+
+  // Kurva halus (Catmull-Rom → Bézier)
+  function smoothPath(pts) {
+    if (pts.length === 1) return `M${pts[0][0]},${pts[0][1]}`;
+    let d = `M${pts[0][0]},${pts[0][1]}`;
+    for (let i = 0; i < pts.length - 1; i++) {
+      const p0 = pts[i - 1] || pts[i], p1 = pts[i], p2 = pts[i + 1], p3 = pts[i + 2] || p2;
+      const t = 6;
+      d += ` C${p1[0] + (p2[0] - p0[0]) / t},${p1[1] + (p2[1] - p0[1]) / t} ${p2[0] - (p3[0] - p1[0]) / t},${p2[1] - (p3[1] - p1[1]) / t} ${p2[0]},${p2[1]}`;
+    }
+    return d;
+  }
+
+  let chartState = null;
+
+  function renderChart() {
+    const model = chartModel($('chart-mode').value);
+    const W = chartEl.clientWidth, H = chartEl.clientHeight;
+    const pad = { l: 64, r: 16, t: 16, b: 56 };
+    const narrow = W < 520;
+    if (narrow) pad.l = 44;
+    const innerW = W - pad.l - pad.r, innerH = H - pad.t - pad.b;
+    const n = model.points.length;
+
+    $('legend').innerHTML = model.series.map(s => `<span><i style="background:${s.color}"></i>${esc(s.name)}</span>`).join('');
+
+    if (!n) {
+      chartEl.querySelector('svg')?.remove();
+      chartEl.insertAdjacentHTML('beforeend', `<svg><text x="50%" y="50%" text-anchor="middle" class="axis-label">No data yet</text></svg>`);
+      return;
+    }
+
+    const all = model.points.flatMap(p => p.values).filter(v => v != null);
+    const max = niceMax(Math.max(...all) * 1.1);
+    const ticks = 4;
+    const inset = n > 1 ? 24 : 0;
+    const x = i => n === 1 ? pad.l + innerW / 2 : pad.l + inset + (i * (innerW - inset * 2)) / (n - 1);
+    const y = v => pad.t + innerH - (v / max) * innerH;
+
+    let svg = `<svg role="img" aria-label="Performance chart">
+      <defs><linearGradient id="area" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="${model.series[0].color}" stop-opacity=".22"/>
+        <stop offset="100%" stop-color="${model.series[0].color}" stop-opacity="0"/>
+      </linearGradient></defs>`;
+
+    for (let i = 0; i <= ticks; i++) {
+      const v = (max / ticks) * i;
+      const label = v >= 60 && v % 60 === 0 ? `${v / 60}m` : `${+v.toFixed(1)}s`;
+      svg += `<text class="axis-label" x="0" y="${y(v) + 6}">${label}</text>`;
+    }
+
+    model.series.forEach((s, si) => {
+      // Pecah garis jika ada nilai kosong (mis. scenario baru tanpa data run sebelumnya)
+      const segments = [];
+      let cur = [];
+      model.points.forEach((p, i) => {
+        const v = p.values[si];
+        if (v == null) { if (cur.length) segments.push(cur); cur = []; }
+        else cur.push([x(i), y(v)]);
+      });
+      if (cur.length) segments.push(cur);
+      segments.forEach(seg => {
+        const d = smoothPath(seg);
+        if (s.area && seg.length > 1) {
+          svg += `<path d="${d} L${seg[seg.length - 1][0]},${pad.t + innerH} L${seg[0][0]},${pad.t + innerH} Z" fill="url(#area)"/>`;
+        }
+        svg += `<path d="${d}" fill="none" stroke="${s.color}" stroke-width="2.5" stroke-linecap="round"/>`;
+        if (seg.length === 1) svg += `<circle cx="${seg[0][0]}" cy="${seg[0][1]}" r="5" fill="${s.color}"/>`;
+      });
+    });
+
+    svg += `<line id="hover-line" x1="0" x2="0" y1="${pad.t}" y2="${pad.t + innerH + 12}" stroke="${css('--muted-2')}" stroke-dasharray="4 4" visibility="hidden"/>`;
+    svg += `<g id="hover-dots"></g>`;
+
+    const step = n > 1 ? (innerW - inset * 2) / (n - 1) : innerW;
+    const every = Math.max(1, Math.ceil(46 / Math.max(step, 1)));
+    model.points.forEach((p, i) => {
+      if (i % every && i !== n - 1) return;
+      svg += `<g class="x-tick" data-i="${i}">
+        <rect x="${x(i) - 24}" y="${H - 42}" width="48" height="34" rx="17" fill="${css('--soft')}" opacity="0"/>
+        <text class="x-label" x="${x(i)}" y="${H - 19}" text-anchor="middle">${esc(p.label)}</text></g>`;
+    });
+    svg += `<rect id="hover-zone" x="${pad.l}" y="0" width="${innerW}" height="${H}" fill="transparent"/></svg>`;
+
+    chartEl.querySelector('svg')?.remove();
+    chartEl.insertAdjacentHTML('beforeend', svg);
+    chartState = { model, x, y, n, pad, innerH, W };
+
+    const zone = chartEl.querySelector('#hover-zone');
+    zone.addEventListener('pointermove', e => {
+      const rect = chartEl.getBoundingClientRect();
+      const px = e.clientX - rect.left;
+      let best = 0;
+      for (let i = 1; i < n; i++) if (Math.abs(x(i) - px) < Math.abs(x(best) - px)) best = i;
+      showPoint(best);
+    });
+    zone.addEventListener('pointerleave', hidePoint);
+    hidePoint();
+  }
+
+  function showPoint(i) {
+    const { model, x, y, pad, W } = chartState;
+    const p = model.points[i];
+    const line = chartEl.querySelector('#hover-line');
+    line.setAttribute('x1', x(i)); line.setAttribute('x2', x(i)); line.setAttribute('visibility', 'visible');
+    chartEl.querySelector('#hover-dots').innerHTML = model.series.map((s, si) => p.values[si] == null ? '' :
+      `<circle cx="${x(i)}" cy="${y(p.values[si])}" r="6" fill="${s.color}" stroke="#fff" stroke-width="2.5"/>`).join('');
+    chartEl.querySelectorAll('.x-tick').forEach(g => {
+      const active = +g.dataset.i === i;
+      g.querySelector('rect').setAttribute('opacity', active ? 1 : 0);
+      g.querySelector('text').classList.toggle('active', active);
+    });
+
+    const rows = model.series.map((s, si) => `<div class="row"><span class="bar" style="background:${s.color}"></span>${esc(s.name)}<b>${p.values[si] == null ? '–' : fmtDuration(p.values[si] * 1000)}</b></div>`)
+      .concat((p.extra || []).map(e => `<div class="row"><span class="bar" style="background:${e.color}"></span>${esc(e.name)}<b>${esc(e.value)}</b></div>`));
+    tooltip.innerHTML = `<h4>${esc(p.title)}</h4>${rows.join('')}`;
+    tooltip.hidden = false;
+    // Tooltip di samping titik (kanan, pindah ke kiri kalau tidak muat)
+    const tw = tooltip.offsetWidth, th = tooltip.offsetHeight;
+    const gap = 22;
+    const left = x(i) + gap + tw <= W ? x(i) + gap : Math.max(0, x(i) - gap - tw);
+    const vals = p.values.filter(v => v != null);
+    const midY = (y(Math.max(...vals)) + y(Math.min(...vals))) / 2;
+    const top = Math.min(Math.max(0, midY - th / 2), pad.t + chartState.innerH - th);
+    tooltip.style.left = `${left}px`;
+    tooltip.style.top = `${top}px`;
+  }
+
+  function hidePoint() {
+    tooltip.hidden = true;
+    if (!chartState) return;
+    chartEl.querySelector('#hover-line')?.setAttribute('visibility', 'hidden');
+    const dots = chartEl.querySelector('#hover-dots');
+    if (dots) dots.innerHTML = '';
+    chartEl.querySelectorAll('.x-tick').forEach(g => { g.querySelector('rect').setAttribute('opacity', 0); g.querySelector('text').classList.remove('active'); });
+  }
+
+  $('chart-mode').addEventListener('change', renderChart);
+  new ResizeObserver(() => renderChart()).observe(chartEl);
+
+  // ---------- Scenarios ----------
+  const openRows = new Set(DATA.scenarios.filter(s => s.status === 'failed').map(s => s.key));
+  const query = () => $('search').value.trim().toLowerCase();
+  const matches = s => {
+    const q = query();
+    const filter = $('status-filter').value;
+    if (filter !== 'all' && s.status !== filter) return false;
+    return !q || [s.name, s.feature, ...s.tags].some(t => t.toLowerCase().includes(q));
+  };
+
+  function stepHtml(s, step, i) {
+    const statusIcon = step.status === 'passed' ? 'check' : step.status === 'failed' ? 'cross' : 'minus';
+    return `<li class="step">
+      <span class="step-icon ${step.status}" title="${statusLabel(step.status)}">${icon(statusIcon)}</span>
+      <span class="step-text"><b>${esc(step.keyword)}</b>${esc(step.name)}</span>
+      <span class="step-time">${fmtDuration(step.durationMs)}</span>
+      <button class="shot-btn" type="button" data-shot="${s.index}:${i}" ${step.screenshot ? '' : 'hidden'}>${icon('camera')}View</button>
+    </li>`;
+  }
+
+  function renderScenarios() {
+    const list = DATA.scenarios.filter(matches);
+    $('scenario-list').innerHTML = list.length ? list.map(s => {
+      const t = tone(s.featureIndex);
+      const open = openRows.has(s.key);
+      return `<article class="scenario ${open ? 'open' : ''}" id="sc-${s.index}">
+        <div class="scenario-row" data-toggle="${esc(s.key)}" title="${open ? 'Hide' : 'Show'} steps">
+          <span class="feature-icon" style="background:${t.bg};color:${t.fg}">${icon(featureIcon(s.feature))}</span>
+          <div style="min-width:0">
+            <div class="scenario-name" title="${esc(s.name)}">${esc(s.name)}</div>
+            <div class="scenario-feature">${esc(s.feature)}</div>
+          </div>
+          <span class="status ${s.status}">${statusLabel(s.status)}</span>
+          <span class="duration">${icon('clock')}${fmtDuration(s.durationMs)}</span>
+          <button class="more-btn" type="button" data-toggle="${esc(s.key)}" aria-expanded="${open}" aria-controls="detail-${s.index}" aria-label="${open ? 'Hide' : 'Show'} steps for ${esc(s.name)}">${icon('chevron')}</button>
+        </div>
+        ${open ? `<div class="scenario-detail" id="detail-${s.index}">
+          <div class="tags">${s.tags.map(tag => `<span class="tag">${esc(tag)}</span>`).join('')}<span class="tag plain">${esc(s.uri)}</span>
+            ${s.video ? `<button class="shot-btn" type="button" data-video="${s.index}" style="margin-left:auto">${icon('video')}Watch video</button>` : ''}</div>
+          <ol class="steps">${s.steps.map((st, i) => (!st.hook || st.failed) ? stepHtml(s, st, i) : '').join('')}</ol>
+          ${s.failure ? `<div class="mini-error">
+            <span class="pill red">${esc(s.failure.category)}</span>
+            <span>${esc(s.failure.summary)}</span>
+            <a href="#err-${s.index}">Open error log →</a>
+          </div>` : ''}
+        </div>` : ''}
+      </article>`;
+    }).join('') : `<div class="empty">No scenarios match your filter.</div>`;
+  }
+
+  $('scenario-list').addEventListener('click', e => {
+    // Klik di mana saja pada baris (ikon, judul, status, durasi, atau tombol panah) membuka/menutup detail
+    const toggle = e.target.closest('[data-toggle]');
+    if (toggle) {
+      const key = toggle.dataset.toggle;
+      openRows.has(key) ? openRows.delete(key) : openRows.add(key);
+      renderScenarios();
+      // Kembalikan fokus keyboard ke tombol panah setelah daftar di-render ulang
+      [...document.querySelectorAll('.more-btn[data-toggle]')].find(b => b.dataset.toggle === key)?.focus({ preventScroll: true });
+      return;
+    }
+    const shot = e.target.closest('[data-shot]');
+    if (shot) {
+      const [sIdx, stIdx] = shot.dataset.shot.split(':').map(Number);
+      const s = DATA.scenarios.find(x => x.index === sIdx);
+      const st = s.steps[stIdx];
+      openLightbox(st.screenshot.src, `${s.name} — ${st.keyword} ${st.name}`);
+    }
+  });
+
+  // ---------- Activity ----------
+  function renderActivity() {
+    const list = DATA.scenarios.filter(matches);
+    $('activity-list').innerHTML = list.length ? list.map(s => {
+      const t = tone(s.featureIndex);
+      const verb = { passed: 'Passed', failed: 'Failed', skipped: 'Skipped' }[s.status];
+      const failedStep = s.failure && s.steps[s.failure.stepIndex];
+      const shot = failedStep && failedStep.screenshot;
+      const changed = s.previousStatus && s.previousStatus !== s.status
+        ? ` <span title="Status in previous run">(was ${s.previousStatus})</span>` : '';
+      return `<div class="act">
+        <span class="avatar" style="background:${t.bg};color:${t.fg}">${esc(initials(s.feature))}<span class="dot" style="background:${statusColor(s.status)}"></span></span>
+        <div style="min-width:0">
+          <div class="act-head"><strong>${esc(s.feature)}</strong><span>${fmtDuration(s.durationMs)}</span></div>
+          <div class="act-sub">${verb} on <a href="#sc-${s.index}" data-open="${esc(s.key)}">${esc(s.name)}</a>${changed}</div>
+          ${s.failure ? `<div class="bubble"><b>${esc(s.failure.title)}.</b> ${esc(s.failure.summary)}
+            <div style="margin-top:8px"><a href="#err-${s.index}" style="color:var(--red);font-weight:700">See error log →</a></div>
+            <span class="badge">${icon('alert')}</span></div>` : ''}
+          ${shot ? `<button class="file-card" type="button" data-src="${esc(shot.src)}" data-caption="${esc(s.name)}">
+            <span class="thumb">${icon('image')}</span>
+            <span><b>${esc(shot.name)}</b><span>${shot.sizeKb} KB · failed step</span></span>
+            <span class="dl">${icon('download')}</span></button>` : ''}
+        </div>
+      </div>`;
+    }).join('') : `<div class="empty">Nothing here.</div>`;
+  }
+
+  $('activity-list').addEventListener('click', e => {
+    const link = e.target.closest('[data-open]');
+    if (link) { openRows.add(link.dataset.open); renderScenarios(); }
+    const file = e.target.closest('[data-src]');
+    if (file) openLightbox(file.dataset.src, file.dataset.caption);
+  });
+
+  // ---------- Logs ----------
+  const fmtClock = ms => {
+    const m = Math.floor(ms / 60000);
+    const s = ((ms % 60000) / 1000).toFixed(1).padStart(4, '0');
+    return `${String(m).padStart(2, '0')}:${s}`;
+  };
+  const STATUS_SYMBOL = { passed: '✓', failed: '✗', skipped: '–', undefined: '?', pending: '…', ambiguous: '≠' };
+  const visibleSteps = s => s.steps.filter(st => !st.hook || st.failed);
+  const browserLogsUntilFailure = s => s.steps.slice(0, s.failure.stepIndex + 1).flatMap(st => st.browserLogs || []);
+
+  function whereHtml(w) {
+    const target = w.file ? `${w.file}:${w.line}${w.fn ? `  (${w.fn})` : ''}` : w.text;
+    return `<li><span class="node"></span><span class="lbl">${esc(w.label)}</span><code>${esc(target)}</code></li>`;
+  }
+
+  function snippetHtml(sn) {
+    return `<figure class="snippet">
+      <figcaption class="snippet-head"><span>${esc(sn.file)}</span><span>line ${sn.line}</span></figcaption>
+      <div class="snippet-body">${sn.lines.map((code, i) => {
+        const ln = sn.startLine + i;
+        return `<div class="code-line ${ln === sn.line ? 'hit' : ''}"><span class="ln">${ln}</span><span class="src">${esc(code) || ' '}</span></div>`;
+      }).join('')}</div>
+    </figure>`;
+  }
+
+  function errorCardHtml(s) {
+    const f = s.failure;
+    const step = s.steps[f.stepIndex];
+    const visible = visibleSteps(s);
+    const position = visible.indexOf(step) + 1;
+    const logs = browserLogsUntilFailure(s);
+    const facts = [
+      f.locator && `<span class="fact"><b>Locator</b><code>${esc(f.locator)}</code></span>`,
+      f.timeout && `<span class="fact"><b>Waited</b>${esc(f.timeout)}</span>`,
+    ].filter(Boolean).join('');
+
+    return `<article class="error-card" id="err-${s.index}">
+      <div class="err-top">
+        <div>
+          <span class="pill red solid">${esc(f.category)}</span>
+          <h3>${esc(f.title)}</h3>
+          <div class="muted"><b>${esc(s.name)}</b> · ${esc(s.feature)} · failed at step ${position} of ${visible.length}</div>
+        </div>
+        <span class="muted" style="font-size:15px;white-space:nowrap">at ${fmtClock(step.startMs)} · took ${fmtDuration(step.durationMs)}</span>
+      </div>
+
+      <p class="err-explain">${esc(f.explain)}</p>
+
+      ${f.expected != null && f.received != null ? `
+        <div class="err-block-title">What the test expected vs what happened</div>
+        <div class="compare">
+          <div class="exp"><span>Expected</span><code>${esc(f.expected)}</code></div>
+          <div class="rec"><span>Received</span><code>${esc(f.received)}</code></div>
+        </div>` : `
+        <div class="err-block-title">Error message</div>
+        <div class="compare" style="grid-template-columns:1fr"><div class="rec"><span>Message</span><code>${esc(f.summary)}</code></div></div>`}
+      ${facts ? `<div class="facts">${facts}</div>` : ''}
+
+      <div class="err-block-title">Where it failed</div>
+      <ol class="trail">${f.where.map(whereHtml).join('')}</ol>
+
+      ${f.snippet ? `<div class="err-block-title">Code</div>${snippetHtml(f.snippet)}` : ''}
+
+      <div class="hint">${icon('bulb')}<div><b>How to fix: </b>${esc(f.hint)}</div></div>
+
+      ${logs.length ? `<div class="err-block-title">Browser console (${logs.length})</div>
+        <ul class="browser-logs">${logs.map(l => `<li><b>${esc(l.type)}</b>${esc(l.text)}</li>`).join('')}</ul>` : ''}
+
+      <div class="err-actions">
+        ${step.screenshot ? `<button class="btn-soft" type="button" data-src="${esc(step.screenshot.src)}" data-caption="${esc(`${s.name} — ${step.keyword} ${step.name}`)}">${icon('camera')}Screenshot at failure</button>` : ''}
+        ${s.video ? `<button class="btn-soft" type="button" data-video="${s.index}">${icon('video')}Watch recording</button>` : ''}
+        <button class="btn-soft" type="button" data-copy="${s.index}">${icon('copy')}<span>Copy error</span></button>
+      </div>
+      <details class="raw-log"><summary>Full error log</summary><pre>${esc(f.raw)}</pre></details>
+    </article>`;
+  }
+
+  let logFilter = 'all';
+
+  function logLines() {
+    const lines = [];
+    const list = logFilter === 'errors' ? DATA.scenarios.filter(s => s.failure) : DATA.scenarios;
+    for (const s of list) {
+      lines.push({ cls: 'sc', t: s.startMs, s: '▸', x: `${s.feature} › ${s.name}`, d: s.durationMs });
+      s.steps.forEach((st, i) => {
+        if (logFilter === 'errors' && st.status === 'passed' && !(st.browserLogs || []).length) return;
+        lines.push({ cls: `${st.status} ${st.hook ? 'hook' : ''}`, t: st.startMs, s: STATUS_SYMBOL[st.status] || '·', x: `${st.keyword} ${st.name}`.trim(), d: st.durationMs });
+        for (const l of st.browserLogs || []) lines.push({ cls: 'warn', t: st.startMs + st.durationMs, s: '!', x: `[browser ${l.type}] ${l.text}` });
+        if (s.failure && s.failure.stepIndex === i) {
+          const excerpt = s.failure.raw.split('\n').filter(l => l.trim()).slice(0, 6).join('\n');
+          lines.push({ cls: 'err', t: null, s: '', x: excerpt, link: s.index });
+        }
+      });
+    }
+    return lines;
+  }
+
+  function renderTerminal() {
+    const lines = logLines();
+    $('term-body').innerHTML = lines.length ? lines.map(l => `<div class="tl ${l.cls}">
+      <span class="t">${l.t == null ? '' : fmtClock(l.t)}</span>
+      <span class="s">${esc(l.s)}</span>
+      <span class="x">${esc(l.x)}${l.link ? `\n<a href="#err-${l.link}">→ open error details</a>` : ''}</span>
+      <span class="d">${l.d == null ? '' : fmtDuration(l.d)}</span>
+    </div>`).join('') : `<div class="tl"><span></span><span></span><span class="x" style="color:#5fd3a6">No errors in this run.</span></div>`;
+    document.querySelectorAll('[data-log-filter]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.logFilter === logFilter)));
+  }
+
+  function renderLogs() {
+    $('logs-count').textContent = FAILURES.length ? `${FAILURES.length} error${FAILURES.length > 1 ? 's' : ''}` : 'No errors';
+    $('logs-intro').textContent = FAILURES.length
+      ? 'Each card explains what went wrong, where in the code it happened, and how to fix it. The execution log below shows every step in order.'
+      : 'Every step ran without errors. The execution log below shows every step in order.';
+    $('error-list').innerHTML = FAILURES.length
+      ? FAILURES.map(errorCardHtml).join('')
+      : `<div class="ok-card"><span class="icon-circle">${icon('checkCircle')}</span>No errors in this run — all ${S.total} scenarios passed.</div>`;
+    renderTerminal();
+  }
+
+  async function copyText(text, btn) {
+    try {
+      await navigator.clipboard.writeText(text);
+    } catch {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      ta.remove();
+    }
+    const label = btn.querySelector('span');
+    if (label) {
+      const old = label.textContent;
+      label.textContent = 'Copied!';
+      setTimeout(() => { label.textContent = old; }, 1500);
+    } else {
+      btn.title = 'Copied!';
+      setTimeout(() => { btn.title = 'Copy log'; }, 1500);
+    }
+  }
+
+  $('error-list').addEventListener('click', e => {
+    const shot = e.target.closest('[data-src]');
+    if (shot) openLightbox(shot.dataset.src, shot.dataset.caption);
+    const copy = e.target.closest('[data-copy]');
+    if (copy) {
+      const s = DATA.scenarios.find(x => x.index === Number(copy.dataset.copy));
+      copyText(`${s.feature} › ${s.name}\n${s.failure.title}: ${s.failure.summary}\n\n${s.failure.raw}`, copy);
+    }
+  });
+  document.querySelectorAll('[data-log-filter]').forEach(b => b.addEventListener('click', () => {
+    logFilter = b.dataset.logFilter;
+    renderTerminal();
+  }));
+  $('copy-log').addEventListener('click', e => {
+    const text = logLines().map(l => `${l.t == null ? '        ' : fmtClock(l.t)}  ${l.s || ' '}  ${l.x}${l.d == null ? '' : `  (${fmtDuration(l.d)})`}`).join('\n');
+    copyText(text, e.currentTarget);
+  });
+
+  // ---------- Videos ----------
+  const VIDEOS = DATA.scenarios.filter(s => s.video);
+
+  function renderVideos() {
+    const filter = $('video-filter').value;
+    const list = DATA.scenarios.filter(s => filter === 'all' || s.status === filter);
+    $('videos-count').textContent = `${VIDEOS.length} recording${VIDEOS.length === 1 ? '' : 's'}`;
+    $('video-grid').innerHTML = list.length ? list.map(s => {
+      const t = tone(s.featureIndex);
+      return `<article class="video-card ${s.status}" id="video-${s.index}">
+        ${s.video
+          // #t=… supaya frame di tengah video (halaman sudah termuat) tampil sebagai thumbnail
+          ? `<video controls preload="metadata" playsinline src="${esc(s.video.src)}#t=${Math.max(1, Math.round((s.durationMs / 1000) * 0.6))}" aria-label="Recording of ${esc(s.name)}"></video>`
+          : `<div class="no-video">No recording for this scenario</div>`}
+        <div class="video-meta">
+          <span class="feature-icon" style="background:${t.bg};color:${t.fg}">${icon(featureIcon(s.feature))}</span>
+          <div style="min-width:0">
+            <b>${esc(s.name)}</b>
+            <div class="sub"><span class="status ${s.status}">${statusLabel(s.status)}</span><span>${esc(s.feature)}</span><span>${fmtDuration(s.durationMs)}</span>${s.video ? `<span>${s.video.sizeKb} KB</span>` : ''}</div>
+          </div>
+          ${s.video ? `<button class="btn-xs icon-btn-xs expand" type="button" data-video="${s.index}" title="Play large" aria-label="Play ${esc(s.name)} in large view">${icon('external')}</button>` : ''}
+        </div>
+        ${s.failure ? `<div class="video-error"><b>${esc(s.failure.title)}.</b> ${esc(s.failure.summary)} · <a href="#err-${s.index}">See error log →</a></div>` : ''}
+      </article>`;
+    }).join('') : `<div class="empty">No scenarios match this filter.</div>`;
+  }
+
+  function openVideo(index) {
+    const s = DATA.scenarios.find(x => x.index === index);
+    if (!s || !s.video) return;
+    openLightbox(s.video.src, `${s.name} — ${statusLabel(s.status)} · ${fmtDuration(s.durationMs)}`, 'video');
+  }
+
+  $('video-filter').addEventListener('change', renderVideos);
+  // Klik tombol "Watch video" di mana pun (scenario, kartu error, galeri)
+  document.addEventListener('click', e => {
+    const btn = e.target.closest('[data-video]');
+    if (btn) openVideo(Number(btn.dataset.video));
+  });
+  // Saat satu video diputar, hentikan video lain di galeri
+  $('video-grid').addEventListener('play', e => {
+    document.querySelectorAll('#video-grid video').forEach(v => { if (v !== e.target) v.pause(); });
+  }, true);
+
+  const nav = $('nav-videos');
+  if (VIDEOS.length) nav.textContent = VIDEOS.length; else nav.remove();
+  if (!VIDEOS.length) {
+    $('action-videos').setAttribute('aria-disabled', 'true');
+    $('action-videos').title = 'No recordings in this run';
+  }
+
+  // ---------- History ----------
+  const RUNS = DATA.history; // urut dari run terlama ke terbaru
+  const runByNo = n => RUNS.find(r => r.runNumber === n);
+  const runLabel = r => `#${r.runNumber} · ${fmtDate(r.runAt)} ${fmtTime(r.runAt)} · ${r.passed}/${r.total}`;
+  const runHref = r => r.archived ? `${DATA.paths.runs}run-${r.runNumber}/index.html` : null;
+
+  function scenarioInfo(key) {
+    for (let i = RUNS.length - 1; i >= 0; i--) {
+      const e = RUNS[i].scenarios && RUNS[i].scenarios[key];
+      if (e && e.name) return { name: e.name, feature: e.feature };
+    }
+    const cur = DATA.scenarios.find(s => s.key === key);
+    if (cur) return { name: cur.name, feature: cur.feature };
+    return { name: key.split('::').pop(), feature: key.split('::')[0] };
+  }
+
+  // Scenario di run terbaru dulu, lalu scenario lama yang sudah tidak ada
+  const ALL_KEYS = [...new Set([
+    ...DATA.scenarios.map(s => s.key),
+    ...[...RUNS].reverse().flatMap(r => Object.keys(r.scenarios || {})),
+  ])];
+
+  function durationDelta(a, b) {
+    if (a == null || b == null) return { cls: 'neutral', text: '–' };
+    const d = b - a;
+    const significant = Math.abs(d) >= 1000 && Math.abs(d) >= a * 0.15;
+    if (!significant) return { cls: 'neutral', text: d === 0 ? '±0' : `${d > 0 ? '+' : '-'}${fmtDuration(Math.abs(d))}` };
+    return { cls: d < 0 ? 'good' : 'bad', text: `${d > 0 ? '+' : '-'}${fmtDuration(Math.abs(d))} ${d < 0 ? 'faster' : 'slower'}` };
+  }
+
+  let cmpA = (RUNS.length > 1 ? RUNS[RUNS.length - 2] : RUNS[RUNS.length - 1]).runNumber;
+  let cmpB = RUNS[RUNS.length - 1].runNumber;
+
+  function renderRunTable() {
+    const head = `<div class="run-row head"><span>Run</span><span>Result</span><span>Duration</span><span>Failed scenarios</span><span></span></div>`;
+    const rows = [...RUNS].reverse().map(r => {
+      const prior = RUNS[RUNS.indexOf(r) - 1];
+      const dd = prior ? durationDelta(prior.durationMs, r.durationMs) : { cls: 'neutral', text: 'first run' };
+      const failed = Object.entries(r.scenarios || {}).filter(([, e]) => e.status === 'failed').map(([key]) => scenarioInfo(key).name);
+      const isCur = r.runNumber === DATA.runNumber;
+      const selected = r.runNumber === cmpA || r.runNumber === cmpB;
+      const w = n => (r.total ? (n / r.total) * 100 : 0);
+      const href = runHref(r);
+      const openBtn = isCur
+        ? `<span class="btn-xs ghost">${DATA.snapshot ? 'Viewing' : 'Latest'}</span>`
+        : href ? `<a class="btn-xs" href="${esc(href)}">Open ${icon('external')}</a>`
+        : `<span class="btn-xs ghost" title="Recorded before run archiving was added">No archive</span>`;
+      return `<div class="run-row ${isCur ? 'is-current' : ''} ${selected ? 'is-selected' : ''}">
+        <div class="run-id"><b>Run #${r.runNumber}</b><span>${fmtDate(r.runAt)} · ${fmtTime(r.runAt)}</span></div>
+        <div class="result"><span class="bar"><i class="p" style="width:${w(r.passed)}%"></i><i class="f" style="width:${w(r.failed)}%"></i><i class="s" style="width:${w(r.skipped)}%"></i></span>${r.passed}/${r.total}<span class="rate">${pct(r.passed, r.total)}%</span></div>
+        <div class="run-dur">${fmtDuration(r.durationMs)}<small class="${dd.cls}">${esc(dd.text)}</small></div>
+        <div class="fail-chips">${failed.length
+          ? failed.slice(0, 3).map(n => `<span class="chip" title="${esc(n)}">${esc(n)}</span>`).join('') + (failed.length > 3 ? `<span class="chip">+${failed.length - 3}</span>` : '')
+          : `<span class="chip ok">All passed</span>`}</div>
+        <div class="run-actions-cell">
+          <button class="btn-xs icon-btn-xs" type="button" data-compare="${r.runNumber}" title="Compare with Run #${DATA.runNumber}" aria-label="Compare Run #${r.runNumber} with Run #${DATA.runNumber}">${icon('swap')}</button>
+          ${openBtn}
+        </div>
+      </div>`;
+    });
+    $('run-table').innerHTML = head + rows.join('');
+  }
+
+  function changeOf(ea, eb) {
+    if (!ea && eb) return ['new', 'New'];
+    if (ea && !eb) return ['removed', 'Not run'];
+    if (ea.status !== 'failed' && eb.status === 'failed') return ['broke', 'Broke'];
+    if (ea.status === 'failed' && eb.status === 'passed') return ['fixed', 'Fixed'];
+    if (ea.status === 'failed' && eb.status === 'failed') return ['still', 'Still failing'];
+    if (ea.status !== eb.status) return ['changed', `${statusLabel(ea.status)} → ${statusLabel(eb.status)}`];
+    return ['same', 'Same'];
+  }
+
+  function cmpCell(e) {
+    return e ? `<span class="cmp-cell"><span class="status ${e.status}">${statusLabel(e.status)}</span><em>${fmtDuration(e.durationMs)}</em></span>` : `<span class="cmp-cell"><em>not run</em></span>`;
+  }
+
+  function cmpStat(label, a, b, { diff, higherIsBetter = true, format = v => v } = {}) {
+    let note = `<small class="neutral">no change</small>`;
+    if (diff) {
+      const good = higherIsBetter ? diff > 0 : diff < 0;
+      note = `<small class="${good ? 'good' : 'bad'}">${diff > 0 ? '+' : '-'}${format(Math.abs(diff))}</small>`;
+    }
+    return `<div class="cmp-stat"><span>${label}</span><b>${a} → ${b}</b>${note}</div>`;
+  }
+
+  function renderCompare() {
+    const options = [...RUNS].reverse().map(r => `<option value="${r.runNumber}">${esc(runLabel(r))}</option>`).join('');
+    $('cmp-a').innerHTML = options;
+    $('cmp-b').innerHTML = options;
+    $('cmp-a').value = cmpA;
+    $('cmp-b').value = cmpB;
+
+    const a = runByNo(cmpA), b = runByNo(cmpB);
+    const sa = a.scenarios || {}, sb = b.scenarios || {};
+    const keys = ALL_KEYS.filter(k => sa[k] || sb[k]);
+    const rows = keys.map(k => ({ key: k, ea: sa[k], eb: sb[k], change: changeOf(sa[k], sb[k]) }));
+    const count = kind => rows.filter(r => r.change[0] === kind).length;
+    const rateA = pct(a.passed, a.total), rateB = pct(b.passed, b.total);
+
+    $('cmp-stats').innerHTML = [
+      cmpStat('Passed', `${a.passed}/${a.total}`, `${b.passed}/${b.total}`, { diff: b.passed - a.passed }),
+      cmpStat('Pass rate', `${rateA}%`, `${rateB}%`, { diff: rateB - rateA, format: v => `${v}%` }),
+      cmpStat('Duration', fmtDuration(a.durationMs), fmtDuration(b.durationMs), { diff: b.durationMs - a.durationMs, higherIsBetter: false, format: fmtDuration }),
+      `<div class="cmp-stat"><span>Changes</span><b>${count('fixed')} fixed · ${count('broke')} broke</b><small class="neutral">${count('still')} still failing</small></div>`,
+    ].join('');
+
+    const onlyChanges = $('cmp-changes').checked;
+    const visible = onlyChanges ? rows.filter(r => r.change[0] !== 'same') : rows;
+    $('cmp-table').innerHTML = cmpA === cmpB
+      ? `<div class="empty">Pick two different runs to compare.</div>`
+      : visible.length ? `<div class="cmp-row head"><span>Scenario</span><span>Run #${cmpA} (A)</span><span>Run #${cmpB} (B)</span><span>Duration</span><span>Change</span></div>` +
+        visible.map(({ key, ea, eb, change }) => {
+          const info = scenarioInfo(key);
+          const why = eb && eb.failure ? eb.failure.summary : null;
+          const dd = durationDelta(ea && ea.durationMs, eb && eb.durationMs);
+          return `<div class="cmp-row">
+            <div class="cmp-name"><b title="${esc(info.name)}">${esc(info.name)}</b><span>${esc(info.feature)}</span>${why ? `<span class="why" title="${esc(why)}">${esc(why)}</span>` : ''}</div>
+            ${cmpCell(ea)}${cmpCell(eb)}
+            <span class="delta-txt ${dd.cls}">${esc(dd.text)}</span>
+            <span class="change ${change[0]}">${esc(change[1])}</span>
+          </div>`;
+        }).join('')
+      : `<div class="empty">No changes between Run #${cmpA} and Run #${cmpB}.</div>`;
+    renderRunTable();
+  }
+
+  function renderMatrix() {
+    const head = RUNS.map(r => {
+      const href = runHref(r);
+      const cur = r.runNumber === DATA.runNumber;
+      const label = `#${r.runNumber}`;
+      return `<th class="${cur ? 'cur' : ''}" title="${esc(`${fmtDate(r.runAt)} ${fmtTime(r.runAt)}`)}">${href && !cur ? `<a href="${esc(href)}">${label}</a>` : label}</th>`;
+    }).join('');
+    const body = ALL_KEYS.map(key => {
+      const info = scenarioInfo(key);
+      const entries = RUNS.map(r => (r.scenarios || {})[key]).filter(Boolean);
+      const passes = entries.filter(e => e.status === 'passed').length;
+      const flaky = entries.some(e => e.status === 'passed') && entries.some(e => e.status === 'failed');
+      const avg = entries.length ? entries.reduce((s, e) => s + e.durationMs, 0) / entries.length : null;
+      const cells = RUNS.map(r => {
+        const e = (r.scenarios || {})[key];
+        const cur = r.runNumber === DATA.runNumber ? 'cur' : '';
+        if (!e) return `<td class="${cur}"><span class="cell absent" title="Run #${r.runNumber} · not run"></span></td>`;
+        const tip = `Run #${r.runNumber} · ${statusLabel(e.status)} · ${fmtDuration(e.durationMs)}${e.failure ? ` · ${e.failure.summary}` : ''}`;
+        return `<td class="${cur}"><span class="cell ${e.status}" title="${esc(tip)}"></span></td>`;
+      }).join('');
+      return `<tr>
+        <th class="sc-name" scope="row"><b title="${esc(info.name)}">${esc(info.name)}</b><span>${esc(info.feature)}</span></th>
+        ${cells}
+        <td class="stat-col">${pct(passes, entries.length)}%</td>
+        <td class="stat-col">${fmtDuration(avg)}</td>
+        <td class="stat-col">${flaky ? '<span class="flaky">FLAKY</span>' : ''}</td>
+      </tr>`;
+    }).join('');
+    $('matrix').innerHTML = `<table class="matrix">
+      <thead><tr><th class="sc-name">Scenario</th>${head}<th class="stat-col">Pass rate</th><th class="stat-col">Avg time</th><th></th></tr></thead>
+      <tbody>${body}</tbody></table>`;
+  }
+
+  function renderHistory() {
+    $('history-count').textContent = `${RUNS.length} run${RUNS.length > 1 ? 's' : ''}`;
+    $('nav-runs').textContent = RUNS.length;
+    renderCompare();
+    renderMatrix();
+  }
+
+  $('cmp-a').addEventListener('change', e => { cmpA = Number(e.target.value); renderCompare(); });
+  $('cmp-b').addEventListener('change', e => { cmpB = Number(e.target.value); renderCompare(); });
+  $('cmp-swap').addEventListener('click', () => { [cmpA, cmpB] = [cmpB, cmpA]; renderCompare(); });
+  $('cmp-changes').addEventListener('change', renderCompare);
+  $('run-table').addEventListener('click', e => {
+    const btn = e.target.closest('[data-compare]');
+    if (!btn) return;
+    const n = Number(btn.dataset.compare);
+    if (n === DATA.runNumber) {
+      const idx = RUNS.findIndex(r => r.runNumber === n);
+      cmpA = (RUNS[idx - 1] || RUNS[idx]).runNumber;
+    } else {
+      cmpA = n;
+    }
+    cmpB = DATA.runNumber;
+    renderCompare();
+    $('compare').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+
+  if (DATA.snapshot) {
+    const banner = $('snapshot-banner');
+    banner.hidden = false;
+    banner.innerHTML = `${icon('archive')}<span>You are viewing archived Run #${DATA.runNumber} from ${fmtDate(DATA.runAt)} · ${fmtTime(DATA.runAt)}.</span><a href="${esc(DATA.paths.latest)}">Open latest dashboard →</a>`;
+  }
+
+  // ---------- Search & filter ----------
+  const refreshLists = () => { renderScenarios(); renderActivity(); };
+  $('search').addEventListener('input', refreshLists);
+  $('status-filter').addEventListener('change', refreshLists);
+  document.addEventListener('keydown', e => {
+    if (e.key === '/' && document.activeElement.tagName !== 'INPUT') { e.preventDefault(); $('search').focus(); }
+    if (e.key === 'Escape') closeLightbox();
+  });
+
+  // ---------- Lightbox ----------
+  let lastFocus = null;
+  function openLightbox(src, caption, kind = 'image') {
+    lastFocus = document.activeElement;
+    const img = $('lightbox-img'), video = $('lightbox-video');
+    img.hidden = kind !== 'image';
+    video.hidden = kind !== 'video';
+    if (kind === 'video') {
+      document.querySelectorAll('#video-grid video').forEach(v => v.pause());
+      video.src = src;
+      video.play().catch(() => {});
+    } else {
+      img.src = src;
+      img.alt = caption;
+    }
+    $('lightbox-caption').textContent = caption;
+    $('lightbox').hidden = false;
+    $('lightbox-close').focus();
+  }
+  function closeLightbox() {
+    if ($('lightbox').hidden) return;
+    const video = $('lightbox-video');
+    video.pause();
+    video.removeAttribute('src');
+    video.load();
+    $('lightbox').hidden = true;
+    lastFocus?.focus();
+  }
+  $('lightbox').addEventListener('click', e => { if (e.target.id === 'lightbox' || e.target.closest('#lightbox-close')) closeLightbox(); });
+
+  // ---------- Sidebar active state ----------
+  // Section aktif = section terakhir yang bagian atasnya sudah lewat 35% tinggi layar
+  const navItems = [...document.querySelectorAll('.nav .nav-item')];
+  const sections = ['overview', 'performance', 'scenarios', 'logs', 'videos', 'history', 'activity'].map($);
+  function updateActiveNav() {
+    const line = window.innerHeight * 0.35;
+    let current = 'overview';
+    const atBottom = window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 4;
+    if (window.scrollY > 40) {
+      for (const sec of sections) if (sec.getBoundingClientRect().top <= line) current = sec.id;
+    }
+    // Activity ada di panel kanan (layar lebar), aktifkan hanya jika memang di-scroll ke sana
+    if (current === 'activity' && sections[6].getBoundingClientRect().top < 0 && !atBottom) current = 'history';
+    navItems.forEach(a => a.classList.toggle('active', a.dataset.section === current));
+  }
+  window.addEventListener('scroll', updateActiveNav, { passive: true });
+  navItems.forEach(a => a.addEventListener('click', () => {
+    navItems.forEach(n => n.classList.toggle('active', n === a));
+  }));
+
+  hydrateIcons(document);
+  refreshLists();
+  renderLogs();
+  renderVideos();
+  renderHistory();
+  renderChart();
+  updateActiveNav();
+})();
+</script>
+</body>
+</html>

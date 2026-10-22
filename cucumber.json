@@ -1,11 +1,8 @@
 {
   "default": {
-    "require": ["steps/**/*.js", "support/**/*.js"],
-    "format": ["@cucumber/pretty-formatter", "json:reports/cucumber-report.json", "allure-cucumberjs/reporter"],
-    "formatOptions": {
-      "resultsDir": "allure-results"
-    },
-    "paths": ["features/**/*.feature"],
+    "require": ["tests/support/**/*.js", "tests/steps/**/*.js"],
+    "format": ["@cucumber/pretty-formatter", "json:reports/cucumber-report.json"],
+    "paths": ["tests/features/**/*.feature"],
     "publishQuiet": true
   }
 }

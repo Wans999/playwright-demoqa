@@ -1,6 +1,13 @@
 # Playwright + Cucumber BDD Framework
 
-Framework automation testing menggunakan Playwright dan Cucumber dengan pola Page Object Model (POM).
+Framework automation testing menggunakan Playwright dan Cucumber dengan pola Page Object Model (POM), dengan target web [demoqa.com](https://demoqa.com).
+
+| Skenario | URL | Yang dites |
+|---|---|---|
+| Bulk Insert User di Web Tables | `/webtables` | Tambah banyak user dari CSV, pastikan semua muncul di tabel |
+| Drag and Drop | `/droppable` | Seret elemen ke area target, pastikan berhasil di-drop |
+| Resize Element | `/resizable` | Ubah ukuran elemen menjadi 400 × 200 px, pastikan ukurannya sesuai |
+| Student Registration Form | `/automation-practice-form` | Isi & submit form, verifikasi data di popup konfirmasi |
 
 ---
 
@@ -19,17 +26,36 @@ Framework automation testing menggunakan Playwright dan Cucumber dengan pola Pag
 
 ```
 playwright/
-├── features/
-│   ├── login.feature        # scenario login (positive & negative)
-│   └── inventory.feature    # scenario halaman produk
-├── pages/
-│   ├── loginPage.js         # POM login page
-│   └── inventoryPage.js     # POM inventory page
-├── steps/
-│   ├── loginSteps.js        # step definitions login
-│   └── inventorySteps.js    # step definitions inventory
-├── support/
-│   └── world.js             # browser setup & hooks
+├── tests/                   # [tests] skenario test
+│   ├── features/
+│   │   ├── webTables.feature
+│   │   ├── droppable.feature
+│   │   ├── resizable.feature
+│   │   └── practiceForm.feature
+│   ├── steps/
+│   │   ├── webTablesSteps.js
+│   │   ├── droppableSteps.js
+│   │   ├── resizableSteps.js
+│   │   └── practiceFormSteps.js
+│   └── support/
+│       ├── world.js             # browser setup, blokir iklan & hooks
+│       └── dataHelper.js        # pembaca data test (CSV/JSON)
+├── pages/                   # [pages] class per halaman berisi aksi (method)
+│   ├── basePage.js          # parent class (open URL)
+│   ├── webTablesPage.js
+│   ├── droppablePage.js
+│   ├── resizablePage.js
+│   └── practiceFormPage.js
+├── locators/                # [locators] selector elemen per halaman
+│   ├── webTablesLocators.js
+│   ├── droppableLocators.js
+│   ├── resizableLocators.js
+│   └── practiceFormLocators.js
+├── data/                    # [data] data test
+│   ├── webTablesUsers.csv   # daftar user untuk bulk insert
+│   ├── studentForm.json     # data form Student Registration
+│   ├── testData.json        # base URL, path halaman, target resize, dll
+│   └── files/profile.png    # file untuk upload picture
 ├── reports/                 # output cucumber JSON report
 ├── allure-results/          # output allure raw results
 ├── allure-report/           # output allure HTML report
@@ -52,10 +78,9 @@ npx playwright install chromium
 
 Buat file `.env` di root project:
 ```
-BASE_URL=https://www.saucedemo.com
-STANDARD_USER=standard_user
-PASSWORD=secret_sauce
+BASE_URL=https://demoqa.com
 ```
+Kalau `.env` tidak ada, base URL diambil dari `data/testData.json`.
 
 ---
 
@@ -68,9 +93,29 @@ npm test
 
 ### Run berdasarkan tag
 ```bash
-npm run test:positive     # hanya scenario @positive
-npm run test:negative     # hanya scenario @negative
-npm run test -- --tags @inventory  # hanya scenario @inventory
+npm run test:webtables   # @webtables
+npm run test:droppable   # @droppable
+npm run test:resizable   # @resizable
+npm run test:form        # @practiceForm
+```
+
+Tanpa membuka browser (headless):
+```bash
+CI=true npm test
+```
+
+### Mengatur kecepatan test
+Saat dijalankan di lokal, test sengaja diperlambat supaya mudah diamati (di CI tanpa jeda):
+
+| Variabel | Default lokal | Fungsi |
+|---|---|---|
+| `SLOW_MO` | `1000` ms | Jeda setiap aksi (klik, ketik, drag) |
+| `STEP_DELAY` | `2000` ms | Jeda setelah setiap step |
+
+Bisa diatur di `.env` atau langsung saat run:
+```bash
+SLOW_MO=2000 STEP_DELAY=3000 npm test   # lebih lambat lagi
+SLOW_MO=0 STEP_DELAY=0 npm test         # kecepatan penuh
 ```
 
 ### Generate HTML Report
@@ -80,9 +125,45 @@ npm run report
 
 Report tersimpan di `reports/html/index.html`.
 
+### Test Dashboard (custom)
+Setiap `npm test` / `npm run test:*` selesai, dashboard **otomatis di-generate dan dibuka di browser**, baik test lulus maupun gagal (lewat `run-tests.js`).
+- Di CI (`CI=true`) dashboard tetap di-generate tapi browser tidak dibuka.
+- Tidak mau browser terbuka otomatis: `DASHBOARD_OPEN=false npm test`
+- `npm run test:allure` sekalian membuat Allure report (single file) sebelum dashboard.
+
+Generate / buka manual:
+```bash
+npm run dashboard        # generate dashboard dari hasil test terakhir
+npm run dashboard:open   # buka di browser
+```
+Dashboard tersimpan di `reports/dashboard/index.html` dan menampilkan:
+- Ringkasan passed / duration / pass rate, dibandingkan dengan run sebelumnya
+- Grafik durasi per scenario (run ini vs run sebelumnya) dan riwayat run
+- Daftar scenario: klik `…` untuk melihat step, error, dan screenshot per step
+- Activity feed per scenario, termasuk pesan error dan screenshot step yang gagal
+- **Logs**: setiap error dijelaskan dengan:
+  - jenis error (teks tidak cocok, elemen tertutup, timeout, dll) dan penjelasannya
+  - Expected vs Received, locator yang dipakai, dan berapa lama Playwright menunggu
+  - lokasi error: feature → step → step definition → page object (file:baris), plus potongan kodenya
+  - saran perbaikan, screenshot saat gagal, error console browser, dan log mentah (bisa di-copy)
+  - execution log gaya terminal untuk semua step (filter *Errors only*)
+
+Analisis error ada di `dashboard/errorAnalyzer.js`. Error console browser dikumpulkan oleh `tests/support/world.js`.
+- Pencarian scenario (tekan `/`)
+
+- **History**: semua run sebelumnya (default 20 terakhir):
+  - daftar run dengan hasil, durasi, dan skenario yang gagal, plus tombol **Open** untuk membuka dashboard lengkap run tersebut (termasuk screenshot & log error)
+  - **Compare runs**: pilih 2 run mana saja, lihat perubahan per skenario (*Fixed*, *Broke*, *Still failing*, lebih cepat/lambat)
+  - **Scenario timeline**: status setiap skenario di setiap run, dengan penanda **FLAKY** untuk test yang kadang lulus kadang gagal
+
+Riwayat run disimpan di `reports/history.json`, dan salinan dashboard tiap run di `reports/dashboard/runs/run-N/`.
+Jumlah run yang disimpan bisa diubah lewat `DASHBOARD_HISTORY` (misal `DASHBOARD_HISTORY=50 npm run dashboard`).
+Hapus `reports/history.json` dan `reports/dashboard/runs/` untuk mulai dari run #1 lagi.
+Kode dashboard ada di `dashboard/generate.js` (pengolah data) dan `dashboard/template.html` (tampilan).
+
 ### Generate Allure Report
 ```bash
-npm run allure:generate   # generate report dari allure-results
+npm run allure:generate   # generate report (single file, bisa dibuka langsung dari allure-report/index.html)
 npm run allure:open       # buka report di browser
 ```
 
@@ -97,37 +178,51 @@ npm run allure:serve
 
 | Tag | Keterangan |
 |---|---|
-| `@positive` | Scenario login berhasil |
-| `@negative` | Scenario login gagal |
-| `@inventory` | Scenario halaman produk |
+| `@webtables` | Bulk insert user dari CSV |
+| `@droppable` | Drag and drop |
+| `@resizable` | Resize elemen ke 400 × 200 |
+| `@practiceForm` | Submit Student Registration Form |
 
 ---
 
 ## Page Object Model (POM)
 
-Setiap halaman memiliki file tersendiri di folder `pages/`. POM menyimpan:
-- **Locator** elemen di constructor
-- **Method** untuk aksi dan assertion
+Kode dipisah menjadi empat bagian:
 
-Contoh struktur POM:
+| Bagian | Folder | Isi |
+|---|---|---|
+| tests | `tests/` | Skenario test (`.feature`) + step definitions |
+| pages | `pages/` | Class per halaman berisi aksi (method) |
+| locators | `locators/` | Selector elemen per halaman |
+| data | `data/` | Data test (CSV / JSON) |
+
+Alurnya: **feature → steps → pages → locators**, dan steps mengambil data dari `data/`.
+
 ```js
-class LoginPage {
-    constructor(page) {
-        this.usernameInput = page.locator('#user-name');
-    }
+// locators/webTablesLocators.js
+module.exports = { addButton: '#addNewRecordButton', ... };
 
-    async fillUsername(username) {
-        await this.usernameInput.fill(username);
+// pages/webTablesPage.js
+const WebTablesLocators = require('../locators/webTablesLocators');
+class WebTablesPage extends BasePage {
+    constructor(page) {
+        super(page);
+        this.addButton = page.locator(WebTablesLocators.addButton);
     }
+    async addUser(user) { ... }
 }
 ```
+
+Untuk menambah user di skenario bulk insert, cukup tambahkan baris di `data/webTablesUsers.csv`, tanpa perlu mengubah kode. Data form bisa diubah di `data/studentForm.json`.
 
 ---
 
 ## Fitur
 
 ### Video Recording
-Setiap test direkam otomatis dan disimpan di folder `videos/`. Dikonfigurasi di `support/world.js`.
+Setiap test direkam otomatis dan disimpan di folder `videos/` dengan nama scenario (misal `drag-element-to-the-target-area-<timestamp>.webm`). Dikonfigurasi di `tests/support/world.js`.
+
+Video bisa ditonton langsung di dashboard (`npm run dashboard`) lewat menu **Videos**, tombol **Watch video** di detail scenario, atau **Watch recording** di kartu error. Video ikut disalin ke arsip setiap run, jadi run lama tetap bisa ditonton dari menu History.
 
 ### Screenshot Per Step
 Screenshot diambil setelah setiap step dan otomatis masuk ke HTML report. Dikonfigurasi menggunakan hook `AfterStep` di `support/world.js`.

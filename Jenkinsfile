@@ -4,7 +4,7 @@ pipeline {
     parameters {
         choice(
             name: 'TAGS',
-            choices: ['all', '@positive', '@negative', '@inventory'],
+            choices: ['all', '@webtables', '@droppable', '@resizable', '@practiceForm'],
             description: 'Pilih tag scenario yang mau dijalankan'
         )
     }
@@ -35,7 +35,7 @@ pipeline {
 
         stage('Run Tests') {
             steps {
-                sh params.TAGS == 'all' ? 'npm test' : "npx cucumber-js --tags ${params.TAGS}"
+                sh params.TAGS == 'all' ? 'npm test' : "npm test -- --tags '${params.TAGS}'"
             }
         }
 
@@ -48,6 +48,15 @@ pipeline {
 
     post {
         always {
+            sh 'npm run dashboard || true'
+            publishHTML(target: [
+                allowMissing: true,
+                alwaysLinkToLastBuild: true,
+                keepAll: true,
+                reportDir: 'reports/dashboard',
+                reportFiles: 'index.html',
+                reportName: 'Test Dashboard'
+            ])
             publishHTML(target: [
                 allowMissing: false,
                 alwaysLinkToLastBuild: true,

@@ -1,0 +1,16 @@
+{
+  "baseUrl": "https://demoqa.com",
+  "paths": {
+    "webTables": "/webtables",
+    "droppable": "/droppable",
+    "resizable": "/resizable",
+    "practiceForm": "/automation-practice-form"
+  },
+  "droppable": {
+    "droppedText": "Dropped!"
+  },
+  "resizable": {
+    "targetWidth": 400,
+    "targetHeight": 200
+  }
+}
