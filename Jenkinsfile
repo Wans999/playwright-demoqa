@@ -74,6 +74,9 @@ pipeline {
                 jdk: '',
                 results: [[path: 'allure-results']]
             ])
+            // Link yang bisa diklik di Console Output
+            echo "Test Dashboard (build ini): ${env.BUILD_URL}Test_20Dashboard/"
+            echo "Test Dashboard (selalu build terakhir): ${env.JOB_URL}Test_20Dashboard/"
         }
     }
 }

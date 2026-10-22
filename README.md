@@ -262,6 +262,12 @@ Setelah build selesai, di sidebar kiri halaman build ada:
 - **Cucumber HTML Report**
 - **Allure Report**
 
+Dashboard build terakhir selalu bisa dibuka di alamat tetap (simpan sebagai bookmark):
+```
+http://localhost:8080/job/<nama-job>/Test_20Dashboard/
+```
+Link ini juga dicetak di akhir **Console Output** setiap build.
+
 ### Wajib: Izinkan JavaScript di Report (CSP)
 Secara default Jenkins memblokir JavaScript di report HTML, sehingga **Test Dashboard tampil kosong** dan grafik Cucumber report tidak muncul.
 Jalankan script ini di **Manage Jenkins → Script Console**:
