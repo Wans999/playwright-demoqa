@@ -2,6 +2,8 @@
 
 Framework automation testing menggunakan Playwright dan Cucumber dengan pola Page Object Model (POM), dengan target web [demoqa.com](https://demoqa.com).
 
+> **Baru pertama kali mencoba?** Ikuti panduan singkat di **[HOW_TO_RUN.md](HOW_TO_RUN.md)** — dari install sampai melihat hasil test.
+
 | Skenario | URL | Yang dites |
 |---|---|---|
 | Bulk Insert User di Web Tables | `/webtables` | Tambah banyak user dari CSV, pastikan semua muncul di tabel |
