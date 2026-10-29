@@ -4,7 +4,9 @@
     "webTables": "/webtables",
     "droppable": "/droppable",
     "resizable": "/resizable",
-    "practiceForm": "/automation-practice-form"
+    "practiceForm": "/automation-practice-form",
+    "textBox": "/text-Box",
+    "link": "/links"
   },
   "droppable": {
     "droppedText": "Dropped!"
